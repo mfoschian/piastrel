@@ -1,94 +1,77 @@
 const express = require('express');
 let router = express.Router();
 
+let Person = require('../models/person.js')
+
+
 router.get('/', function (req, res) {
-	res.json({ message: 'no items yet', items: {} });
+	let items = Person.all();
+	res.json({items});
 });
 
-router.get('/:id([0-9]{3,})', function (req, res) {
-	var currMovie = movies.filter(function (movie) {
-		if (movie.id == req.params.id) {
-			return true;
-		}
-	});
-
-	if (currMovie.length == 1) {
-		res.json(currMovie[0])
+router.get('/:id', function (req, res) {
+	let item = Person.get(req.params.id);
+	if (item != null) {
+		res.json( item )
 	} else {
-		res.status(404);  //Set status to 404 as movie was not found
+		res.status(404);
 		res.json({ message: "Not Found" });
 	}
 });
+
 router.post('/', function (req, res) {
-	//Check if all fields are provided and are valid:
-	if (!req.body.name ||
-		!req.body.year.toString().match(/^[0-9]{4}$/g) ||
-		!req.body.rating.toString().match(/^[0-9]\.[0-9]$/g)) {
+	let fn = req.body.first_name;
+	let ln = req.body.last_name;
+	let code = req.body.code;
+
+	if (!fn || !ln || !code ) {
 		res.status(400);
 		res.json({ message: "Bad Request" });
-	} else {
-		var newId = movies[movies.length - 1].id + 1;
-		movies.push({
-			id: newId,
-			name: req.body.name,
-			year: req.body.year,
-			rating: req.body.rating
+	}
+	else {
+		let p = Person.create( {
+			first_name: fn,
+			last_name: ln,
+			code: code
 		});
-		res.json({ message: "New movie created.", location: "/movies/" + newId });
+		res.json({ message: "New movie created.", new_id: p.id });
 	}
 });
 
 router.put('/:id', function (req, res) {
-	//Check if all fields are provided and are valid:
-	if (!req.body.name ||
-		!req.body.year.toString().match(/^[0-9]{4}$/g) ||
-		!req.body.rating.toString().match(/^[0-9]\.[0-9]$/g) ||
-		!req.params.id.toString().match(/^[0-9]{3,}$/g)) {
-		res.status(400);
-		res.json({ message: "Bad Request" });
-	} else {
-		//Gets us the index of movie with given id.
-		var updateIndex = movies.map(function (movie) {
-			return movie.id;
-		}).indexOf(parseInt(req.params.id));
+	let p = Person.get(req.params.id);
+	if(!p) {
+		res.status(404);
+		res.json({ message: "Not Found" });
+	}
+	else {
+		let p = {};
+		["first_name", "last_name", "code" ].map( k => {
+			let v = req.body[k];
+			if( !( v == null || typeof(v) == 'undefined') )
+				p[k] = req.body[k];
+		});
 
-		if (updateIndex === -1) {
-			//Movie not found, create new
-			movies.push({
-				id: req.params.id,
-				name: req.body.name,
-				year: req.body.year,
-				rating: req.body.rating
-			});
-			res.json({
-				message: "New movie created.", location: "/movies/" + req.params.id
-			});
-		} else {
-			//Update existing movie
-			movies[updateIndex] = {
-				id: req.params.id,
-				name: req.body.name,
-				year: req.body.year,
-				rating: req.body.rating
-			};
-			res.json({
-				message: "Movie id " + req.params.id + " updated.",
-				location: "/movies/" + req.params.id
-			});
+		let pp = Person.update( req.params.id, p );
+		if( !pp ) {
+			res.status(404);
+			res.json({ message: "Not Found" });				
 		}
+		else
+			res.json({success: true, item: pp });
 	}
 });
 
 router.delete('/:id', function (req, res) {
-	var removeIndex = movies.map(function (movie) {
-		return movie.id;
-	}).indexOf(req.params.id); //Gets us the index of movie with given id.
 
-	if (removeIndex === -1) {
-		res.json({ message: "Not found" });
-	} else {
-		movies.splice(removeIndex, 1);
-		res.send({ message: "Movie id " + req.params.id + " removed." });
+	let ok = Person.del(req.params.id);
+	if(!ok) {
+		res.status(404);
+		res.json({ message: "Not Found" });
 	}
+	else
+		res.send({success: true});
 });
+
+
 module.exports = router;
