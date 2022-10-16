@@ -1,10 +1,19 @@
 let DB = require( '../db' );
 
-const table_name = 'persons';
-const upd_fields = ['first_name','last_name','code','note'];
+const table_name = 'events';
+const upd_fields = ['title','date','active'];
 const ups_fields = ['id'].concat(upd_fields);
 
-let Person = {
+function map_fields( record ) {
+	if(!record) return null;
+
+	if( record['date'] ) {
+		record['date'] = DB.parse_dt(record['date']);
+	}
+	return record;
+}
+
+let Event = {
 	all() {
 		return DB.me().select().from(table_name);
 	},
@@ -12,7 +21,7 @@ let Person = {
 		return DB.me().select().from(table_name).where( { id: id } )
 		.then( results => {
 			if( results )
-				return results[0];
+				return map_fields(results[0]);
 			else return null;
 		});
 	},
@@ -28,9 +37,12 @@ let Person = {
 			if( p[f] !== undefined )
 				values[f] = p[f];
 		});
+
 		if( Object.keys(values).length == 0 ) {
 			return this.get(id);
 		}
+		values = map_fields(values);
+
 		return DB.me()(table_name).where({ id: id || p.id }).update( values )
 	},
 	upsert(p) {
@@ -38,4 +50,4 @@ let Person = {
 	}
 }
 
-module.exports = Person;
+module.exports = Event;

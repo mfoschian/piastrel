@@ -1,16 +1,16 @@
 const express = require('express');
 let router = express.Router();
 
-let Person = require('../models/person.js')
+let Event = require('../models/event.js')
 
 
 router.get('/', async function (req, res) {
-	let items = await Person.all();
+	let items = await Event.all();
 	res.json({items});
 });
 
 router.get('/:id', async function (req, res) {
-	let item = await Person.get(req.params.id);
+	let item = await Event.get(req.params.id);
 	if (item != null) {
 		res.json( item )
 	} else {
@@ -29,19 +29,19 @@ router.post('/', async function (req, res) {
 		res.json({ message: "Bad Request" });
 	}
 	else {
-		let p = await Person.create( req.body );
+		let p = await Event.create( req.body );
 		res.json({ message: "New movie created.", new_id: p.id });
 	}
 });
 
 router.put('/:id', async function (req, res) {
-	let p = await Person.get(req.params.id);
+	let p = await Event.get(req.params.id);
 	if(!p) {
 		res.status(404);
 		res.json({ message: "Not Found" });
 	}
 	else {
-		let pp = await Person.update( req.body, p.id );
+		let pp = await Event.update( req.body, p.id );
 		if( !pp ) {
 			res.status(404);
 			res.json({ message: "Not Found" });				
@@ -53,7 +53,7 @@ router.put('/:id', async function (req, res) {
 
 router.delete('/:id', function (req, res) {
 
-	let ok = Person.del(req.params.id);
+	let ok = Event.del(req.params.id);
 	if(!ok) {
 		res.status(404);
 		res.json({ message: "Not Found" });
