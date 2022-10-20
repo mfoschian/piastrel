@@ -1,16 +1,16 @@
 const express = require('express');
 let router = express.Router();
 
-let Event = require('../models/event.js')
+let Convocation = require('../models/convocation.js')
 
 
 router.get('/', async function (req, res) {
-	let items = await Event.all();
+	let items = await Convocation.all();
 	res.json({items});
 });
 
 router.get('/:id', async function (req, res) {
-	let item = await Event.get(req.params.id);
+	let item = await Convocation.get(req.params.id);
 	if (item != null) {
 		res.json( item )
 	} else {
@@ -20,28 +20,28 @@ router.get('/:id', async function (req, res) {
 });
 
 router.post('/', async function (req, res) {
-	let fn = req.body.first_name;
-	let ln = req.body.last_name;
-	let code = req.body.code;
+	let person_id = req.body.person_id;
+	let event_id = req.body.event_id;
+	let bucket_id = req.body.bucket_id;
 
-	if (!fn || !ln || !code ) {
+	if (!person_id || !event_id || !bucket_id) {
 		res.status(400);
 		res.json({ message: "Bad Request" });
 	}
 	else {
-		let p = await Event.create( req.body );
-		res.json({ message: "New event created.", new_id: p.id });
+		let p = await Convocation.create( req.body );
+		res.json({ message: "New Convocation created.", new_id: p.id });
 	}
 });
 
 router.put('/:id', async function (req, res) {
-	let p = await Event.get(req.params.id);
+	let p = await Convocation.get(req.params.id);
 	if(!p) {
 		res.status(404);
 		res.json({ message: "Not Found" });
 	}
 	else {
-		let pp = await Event.update( req.body, p.id );
+		let pp = await Convocation.update( req.body, p.id );
 		if( !pp ) {
 			res.status(404);
 			res.json({ message: "Not Found" });				
@@ -53,7 +53,7 @@ router.put('/:id', async function (req, res) {
 
 router.delete('/:id', function (req, res) {
 
-	let ok = Event.del(req.params.id);
+	let ok = Convocation.del(req.params.id);
 	if(!ok) {
 		res.status(404);
 		res.json({ message: "Not Found" });

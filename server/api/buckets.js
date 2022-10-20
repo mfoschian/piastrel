@@ -1,16 +1,16 @@
 const express = require('express');
 let router = express.Router();
 
-let Event = require('../models/event.js')
+let Bucket = require('../models/bucket.js')
 
 
 router.get('/', async function (req, res) {
-	let items = await Event.all();
+	let items = await Bucket.all();
 	res.json({items});
 });
 
 router.get('/:id', async function (req, res) {
-	let item = await Event.get(req.params.id);
+	let item = await Bucket.get(req.params.id);
 	if (item != null) {
 		res.json( item )
 	} else {
@@ -20,28 +20,27 @@ router.get('/:id', async function (req, res) {
 });
 
 router.post('/', async function (req, res) {
-	let fn = req.body.first_name;
-	let ln = req.body.last_name;
-	let code = req.body.code;
+	let name = req.body.name;
+	let inf_status = req.body.inferred_status;
 
-	if (!fn || !ln || !code ) {
+	if (!name) {
 		res.status(400);
 		res.json({ message: "Bad Request" });
 	}
 	else {
-		let p = await Event.create( req.body );
-		res.json({ message: "New event created.", new_id: p.id });
+		let p = await Bucket.create( req.body );
+		res.json({ message: "New Bucket created.", new_id: p.id });
 	}
 });
 
 router.put('/:id', async function (req, res) {
-	let p = await Event.get(req.params.id);
+	let p = await Bucket.get(req.params.id);
 	if(!p) {
 		res.status(404);
 		res.json({ message: "Not Found" });
 	}
 	else {
-		let pp = await Event.update( req.body, p.id );
+		let pp = await Bucket.update( req.body, p.id );
 		if( !pp ) {
 			res.status(404);
 			res.json({ message: "Not Found" });				
@@ -53,7 +52,7 @@ router.put('/:id', async function (req, res) {
 
 router.delete('/:id', function (req, res) {
 
-	let ok = Event.del(req.params.id);
+	let ok = Bucket.del(req.params.id);
 	if(!ok) {
 		res.status(404);
 		res.json({ message: "Not Found" });
