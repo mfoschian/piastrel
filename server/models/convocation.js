@@ -1,54 +1,14 @@
-let DB = require( '../db' );
+let BaseModel = require( './BaseModel.js' );
 
-const table_name = 'convocation';
-const upd_fields = ['person_id','event_id','bucket_id','status','note'];
-const ups_fields = ['id'].concat(upd_fields);
 
-// function map_fields( record ) {
-// 	if(!record) return null;
+class Convocation extends BaseModel {
 
-// 	if( record['date'] ) {
-// 		record['date'] = DB.parse_dt(record['date']);
-// 	}
-// 	return record;
-// }
 
-let Bucket = {
-	all() {
-		return DB.me().select().from(table_name);
-	},
-	get(id) {
-		return DB.me().select().from(table_name).where( { id: id } )
-		.then( results => {
-			if( results )
-				// return map_fields(results[0]);
-				return results[0];
-			else return null;
-		});
-	},
-	del(id) {
-		return DB.me()(table_name).where( { id: id } ).del();
-	},
-	create(p) {
-		return DB.me()(table_name).insert( p );
-	},
-	update(p, id) {
-		let values = {};
-		upd_fields.forEach( f => {
-			if( p[f] !== undefined )
-				values[f] = p[f];
-		});
+	static table_name = 'convocation';
+	static upd_fields = ['person_id','event_id','bucket_id','status','note'];
+	static ups_fields = ['id'].concat(this.upd_fields);
 
-		if( Object.keys(values).length == 0 ) {
-			return this.get(id);
-		}
-		values = map_fields(values);
 
-		return DB.me()(table_name).where({ id: id || p.id }).update( values )
-	},
-	upsert(p) {
-		return DB.upsert( table_name, p, ups_fields );
-	}
 }
 
-module.exports = Bucket;
+module.exports = Convocation;
