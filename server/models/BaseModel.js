@@ -15,6 +15,7 @@ class BaseModel {
 	}
 
 	static all() {
+		// console.log('Selecting all from %s', this.table_name);
 		return DB.me().select().from(this.table_name);
 	}
 
