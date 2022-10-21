@@ -1,18 +1,19 @@
 <template>
-	<TopBar :room_label="room_label" :date="date" @dateChanged="dateChanged" />
+	<TopBar :event_name="event_name" />
+	<h4 v-if="load_message">{{ load_message }}</h4>
+	<h4 v-if="loaded && !event">Nessun evento attivo: <a href="#">attivane uno</a></h4>
 	<router-view />
 </template>
 
 <script>
-import Settings from './settings'
-import Config from './config'
-
+// import Settings from './settings'
 import TopBar from './components/TopBar.vue'
+import State from './State.js'
+import Server from './Server.js'
 
-import { useRoute } from 'vue-router'
-import { ref, watchEffect, onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 
-
+/*
 function p2(n) {
 	return n < 10 ? '0'+n : ''+n; 
 }
@@ -23,82 +24,57 @@ function dateValue(dt) {
 			+ p2(d.getDate())
 	;
 }
+*/
+
+async function load_state() {
+	let state = State.get();
+
+	state.load_message.value = "Caricamento evento attivo";
+	let active_ev = await Server.get_active_event();
+	if( !active_ev || !active_ev.id ) {
+		state.load_message.value = "";
+		state.loaded.value = true;
+		return state;
+	}
+	
+	state.load_message.value = "Caricamento sezioni";
+	state.buckets.value = await Server.get_buckets();
+
+	state.load_message.value = "Caricamento convocati";
+	state.active_event.value = active_ev;
+	state.convocations.value = await Server.get_convocations( active_ev.id );
+
+	state.load_message.value = "";
+	state.loaded.value = true;
+}
 
 export default {
 	components: { TopBar },
 	setup() {
-		let room_id = ref(null);
-		let room_label = ref(null);
-		let date = ref(dateValue(null));
 
-		let state = {
-			room_id,
-			room_label,
-			date
+		let state = State.get();
+		let event = state.active_event;
+		
+		let page_state = {
+			event,
+			event_name: computed( () => {
+				return (event.value == null ? "" : event.value.name );
+			}),
+			
+			//date,
+			load_message: state.load_message,
+			loaded: state.loaded
 		};
 
-		const route = useRoute();
-		// watch( () => route.query.at, () => {
-		watchEffect( () => {
-			console.log( 'watchEffect' );
-			let v = route.query.at;
-			if( v && v != date.value ) {
-				let ms = Date.parse(v);
-				if(!isNaN(ms)) {
-					// Data valida
-					date.value = v;
-					console.log( 'Date changet to %s', date.value );
-					// let args =  { date = route.query.at };
-					// updateMe(state, args) // Aggiorna lista eventi in quella data ?
-				}
-			}
+		// const route = useRoute();
 
-			let rid = route.query.room;
-			if( rid && rid != room_id.value ) {
-				let r = Config.rooms[rid];
-				if( r ) {
-					room_id.value = rid;
-					room_label.value = r.label;
-					console.log( 'Sala selezionata: %s (%s)', room_id.value, room_label.value );
-				}				
-			}
-
+		onMounted( async () => {
+			let st = await load_state();
 		});
 
-		onMounted( () => {
-			// room specification
-			let rid = route.params.id || route.query.room;
-			if( rid ) {
-				if( route.query.save != null )
-					Settings.room.save( rid );
-				else if( route.query.clear != null )
-					Settings.room.clear();
-			}
-			else {
-				rid = Settings.room.get();
-			}
-
-			room_id.value = rid;
-
-			let r = Config.rooms[rid];
-			if( r ) {
-				room_label.value = r.label;
-				console.log( 'Sala selezionata: %s (%s)', room_id.value, room_label.value );
-			}
-		});
-
-		return state;
+		return page_state;
 	},
 	methods: {
-		dateChanged(new_date) {
-			let query = {
-				at: new_date,
-			};
-			if( this.room_name )
-				query.room = this.room_name;
-
-			this.$router.push( { path: '/', query } );
-		}
 	}
 }
 </script>

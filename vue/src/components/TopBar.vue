@@ -1,7 +1,7 @@
 <template>
 	<div class="welcome_msg">
-		<h3>Di seguito i link alle videoconferenze in <span class="room_label">{{ roomLabel }}</span> il <input type="date" class="the_date" @change="dateChanged" :value="date" ></h3>
-		<h4><span class="badge badge-warning">Si consiglia di utilizzare Chrome</span></h4>
+		<h3>Piastrel</h3>
+		<h4><span v-if="event_name == ''" class="badge badge-warning">Scegliere l'evento</span></h4>
 	</div>
 </template>
 
@@ -11,20 +11,11 @@ const DEFAULT_ROOM_NAME = "programma";
 
 export default {
 	props: {
-		room_label : { type: String, default: DEFAULT_ROOM_NAME },
-		date: { type: String, required: true }
+		event_name: { type: String, default: null }
 	},
 	computed: {
-		roomLabel() {
-			return this.room_label || DEFAULT_ROOM_NAME;
-		}
 	},
 	methods: {
-		dateChanged(ev) {
-			let value = ev.target.value;
-			// console.log( "Changed date to %s", value );
-			this.$emit('dateChanged', value );
-		}
 	}
 }
 
