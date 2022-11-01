@@ -1,5 +1,12 @@
 <template>
-	<TopBar :event_name="event_name" />
+	<TopBar title="Piastrel" :subtitle="event_name" @openSettings="openSettings" />
+	<MenuBar
+		:opened="opened"
+		:items="menus"
+		@close="opened=false"
+		@selection="changePage"
+
+	/>
 	<h4 v-if="load_message">{{ load_message }}</h4>
 	<h4 v-if="loaded && !event">Nessun evento attivo: <a href="#">attivane uno</a></h4>
 	<router-view />
@@ -8,10 +15,12 @@
 <script>
 // import Settings from './settings'
 import TopBar from './components/TopBar.vue'
+import MenuBar from './components/MenuBar.vue'
 import State from './State.js'
 import Server from './Server.js'
 
-import { computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 
 /*
 function p2(n) {
@@ -49,8 +58,8 @@ async function load_state() {
 }
 
 export default {
-	components: { TopBar },
-	setup() {
+	components: { TopBar, MenuBar },
+	setup(props, context) {
 
 		let state = State.get();
 		let event = state.active_event;
@@ -58,15 +67,31 @@ export default {
 		let page_state = {
 			event,
 			event_name: computed( () => {
-				return (event.value == null ? "" : event.value.name );
+				return (event.value == null ? "Scegliere l'evento" : event.value.name );
 			}),
 			
 			//date,
 			load_message: state.load_message,
-			loaded: state.loaded
+			loaded: state.loaded,
+
+			// menubar
+			opened: ref(false),
+			menus: [
+				{ icon: 'bi-house', label: 'Home', path: '/', active: false, tip: 'Home' },
+				{ icon: 'bi-gear', label: 'Admin', path: '/admin', active: false, tip: 'Area admin' },
+			],
+
 		};
 
-		// const route = useRoute();
+		const route = useRoute();
+
+		page_state.changePage = (x) => {
+			page_state.menus.forEach( m => m.active = (m.path == x) )
+			route.push( x );
+			page_state.opened.value = false;
+		};
+		page_state.openSettings = () => { page_state.opened.value = true;	}
+
 
 		onMounted( async () => {
 			let st = await load_state();

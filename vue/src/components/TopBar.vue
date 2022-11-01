@@ -1,18 +1,24 @@
 <template>
-	<div class="welcome_msg">
-		<h3>Piastrel</h3>
-		<h4><span v-if="event_name == ''" class="badge badge-warning">Scegliere l'evento</span></h4>
+	<div class="box">
+		<div class="title">
+			<slot><h3 v-if="title">{{ title }}</h3></slot>
+			<!-- <h3>Piastrel</h3> -->
+			<h3><i class="bi-gear clickable" @click="$emit('openSettings')"></i></h3>
+		</div>
+
+		<!-- <h4><span v-if="event_name == ''" class="badge badge-warning">Scegliere l'evento</span></h4> -->
+		<h4 v-if="subtitle"><span class="badge bg-warning">{{ subtitle }}</span></h4>
 	</div>
 </template>
 
 <script>
 
-const DEFAULT_ROOM_NAME = "programma";
-
 export default {
 	props: {
-		event_name: { type: String, default: null }
+		title: { type: String, default: 'myApp' },
+		subtitle: { type: String, default: null }
 	},
+	emits: [ 'openSettings' ],
 	computed: {
 	},
 	methods: {
@@ -22,20 +28,19 @@ export default {
 </script>
 
 
-<style scoped>
-.welcome_msg {
+<style scoped lang="scss">
+.box {
 	padding: 1.5em;	
+	.title {
+		display: flex;
+		justify-content: space-between;
+		.room_label {
+			font-weight: bold;
+		}
+	}
+	
+
 }
 
-.room_label {
-	font-weight: bold;
-}
 
-.the_date {
-	border: none;
-	font-weight: bold;
-	/*background-color: white;*/
-	/*background-color: #68b3a5;*/
-	background-color: #3580c2;
-}
 </style>
