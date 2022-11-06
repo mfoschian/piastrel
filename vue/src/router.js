@@ -1,16 +1,21 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
-import Viewer from './components/Viewer.vue'
+import DashboardPage from './pages/Dashboard.vue'
+import EventPage from './pages/Events.vue'
 
 
 const routes = [
 	{
 		path: '/',
-		component: Viewer,
-		props: route => ({
-			at: route.query.at,
-			room: route.query.room
-		})
+		component: DashboardPage,
+		// props: route => ({
+		// 	at: route.query.at,
+		// 	room: route.query.room
+		// })
+	},
+	{
+		path: '/events',
+		component: EventPage
 	}
 ];
 

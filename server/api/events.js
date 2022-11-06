@@ -9,6 +9,16 @@ router.get('/', async function (req, res) {
 	res.json({items});
 });
 
+router.get('/active', async function (req, res) {
+	let items = await Event.get_active();
+	if (items != null && items.length > 0 ) {
+		res.json( { items: items } )
+	} else {
+		res.status(404);
+		res.json({ message: "Not Found", items: [] });
+	}
+});
+
 router.get('/:id', async function (req, res) {
 	let item = await Event.get(req.params.id);
 	if (item != null) {
