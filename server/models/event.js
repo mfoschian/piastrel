@@ -10,11 +10,16 @@ class Event extends BaseModel {
 		if (!record) return null;
 
 		if (record['date']) {
-			record['date'] = DB.parse_dt(record['date']);
+			record['date'] = this.parse_dt(record['date']);
 		}
 		return record;
 	}
 
+	static get_active() {
+		let sql = this.table().where( { active: true } );
+		// this.debug( sql );
+		return sql.then( results => results.map(x => this.map_fields(x)) );
+	}
 }
 
 module.exports = Event;

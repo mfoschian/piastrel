@@ -10,8 +10,18 @@ class BaseModel {
 		return record;
 	}
 
+	static debug( sql ) {
+		console.log( sql.toSQL().toNative() );
+	}
+
+	static parse_dt = DB.parse_dt;
+
 	static db() {
 		return DB.me();
+	}
+
+	static table() {
+		return DB.me().table(this.table_name);
 	}
 
 	static all() {

@@ -51,11 +51,11 @@ export default {
 /* The side navigation menu */
 .sidenav {
 	height: 100%;
-	min-width: 15rem;
+	width: 15rem;
 	position: fixed;
 	z-index: 100;
 	top: 0;
-	right: 0;
+	right: -15em;
 	color: white;
 	background-color: var(--second-col);
 	border-left: 2px solid var(--fifth-col);
@@ -63,10 +63,12 @@ export default {
 	// transition: 0.5s;
 	// transition: width 1s 2s;
 	/* 0.5 second transition effect to slide in the sidenav */
-	display: none;
+	// display: none;
+	transition: right 0.2s linear;
 
 	&.opened {
-		display: block;
+		// display: block;
+		right: 0;
 	}
 
 	.closebtn {
