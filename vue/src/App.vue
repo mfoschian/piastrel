@@ -1,32 +1,30 @@
 <template>
-	<TopBar :title="title" :subtitle="subtitle" @openSettings="openSettings" />
+	<Suspense>
+		<router-view
+			@openSettings="openSettings" 
+		/>
+		<template #fallback>
+			Loading ...
+		</template>
+	</Suspense>
 	<MenuBar
 		:opened="opened"
 		:items="menus"
 		@close="opened=false"
 		@selection="changePage"
-
 	/>
-	<Suspense>
-		<router-view />
-		<template #fallback>
-			<h2>Loading ...</h2>
-		</template>
-	</Suspense>
 </template>
 
 <script>
-// import Settings from './settings'
-import TopBar from './components/TopBar.vue'
 import MenuBar from './components/MenuBar.vue'
-import Application from './models/Application'
+// import Application from './models/Application'
 
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 
 export default {
-	components: { TopBar, MenuBar },
+	components: { MenuBar },
 	setup(props, context) {
 
 		let opened = ref(false);
@@ -46,11 +44,13 @@ export default {
 		};
 
 		return {
-			opened, menus, openSettings, changePage,
-			title: Application.title, subtitle: Application.subtitle
+			opened, menus, openSettings, changePage
 		};
 	},
-	methods: {
+	provide() { 
+		return {
+			openMenu: () => this.openSettings()
+		};
 	}
 }
 </script>
