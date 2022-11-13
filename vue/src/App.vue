@@ -19,7 +19,7 @@
 import MenuBar from './components/MenuBar.vue'
 // import Application from './models/Application'
 
-import { ref, computed, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 
@@ -32,7 +32,7 @@ export default {
 
 		let menus = ref([
 				{ icon: 'bi-house', label: 'Home', path: '/', active: false, tip: 'Home' },
-				{ icon: 'bi-gear', label: 'Eventi', path: '/events', active: false, tip: 'Gestione Eventi' },
+				{ icon: 'bi-calendar', label: 'Eventi', path: '/events', active: false, tip: 'Gestione Eventi' },
 		]);
 
 		const router = useRouter();

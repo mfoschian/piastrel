@@ -1,0 +1,15 @@
+
+form {
+	.form-group {
+		margin-bottom: 0.5rem;
+	}
+
+	.buttons {
+		display: flex;
+		justify-content: space-around;
+
+		margin-top: 0.5rem;
+		padding-top: 0.5rem;
+		border-top: var(--bs-modal-header-border-width) solid var(--bs-modal-header-border-color);
+	}
+}

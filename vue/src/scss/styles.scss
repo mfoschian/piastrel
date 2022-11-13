@@ -20,6 +20,8 @@ body {
 }
 
 
+@import "./forms.scss";
+
 @media only screen and (max-width: 720px) {
 	.boxgrid .card .card-title .vcficon {
 		display: none;

@@ -30,12 +30,13 @@
 			<div class="modal-dialog modal-xl">
 				<div class="modal-content">
 					<div class="modal-header">
-						<div class="modal-title">Nuovo Evento</div>
+						<div class="modal-title">{{ editor_title }}</div>
 						<button type="button" class="btn-close" @click="cancel"></button>
 					</div>
 					<div class="modal-body">
 						<EventEditor 
 							:event="edited_item"
+							@cancel="cancel"
 						/>
 					</div>
 				</div>
@@ -45,7 +46,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 import BasePage from './BasePage.vue'
 import EventEditor from '../components/events/EventEditor.vue'
@@ -60,6 +61,7 @@ export default {
 		let _items = await Event.load( max_items ); // reactive !
 
 		let _edited_item = ref(Event.new());
+		let editor_title = computed( () => _edited_item.value.id == null ? "Nuovo Evento" : "Modifica Evento" );
 
 		let dlgVisible = ref(false);
 		let page_error = ref(null);
@@ -80,7 +82,7 @@ export default {
 				date: e.date,
 				active: e.active
 			};
-			debugger
+			// debugger
 			_edited_item.value = ev;
 			dlgVisible.value = true;
 		};
@@ -92,7 +94,8 @@ export default {
 			edit,
 			page_error,
 			dlgVisible,
-			edited_item: _edited_item
+			edited_item: _edited_item,
+			editor_title
 		}
 	}
 }

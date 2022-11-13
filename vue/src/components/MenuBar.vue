@@ -12,23 +12,6 @@
 				<i class="menu-icon" :class="item.icon" ></i><span class="label">{{ item.label }}</span>
 			</div>
 		</div>
-<!-- 
-		<a href="#">
-			<img src="icons/home.svg" title="About" alt="About" >
-			<span class="label">About</span>
-		</a>
-		<a href="#">
-			<img src="icons/bookmark.svg" title="Services" alt="Services">
-			<span class="label">Services tutti a casa sempre</span>
-		</a>
-		<a href="#">
-			<img src="icons/group.svg" title="Clients" alt="Clients">
-			<span class="label">Clients</span>
-		</a>
-		<a href="#">
-			<img src="icons/contact.svg" title="Contact" alt="Contact">
-			<span class="label">Contact</span>
-		</a> -->
 	</div>
 </template>
 
@@ -38,11 +21,6 @@ export default {
 		opened: { type: Boolean, default: true },
 		items: { type: Array, default: () => [] }
 	}
-	// data() {
-	// 	// return {
-	// 	// 	opened: false
-	// 	// }
-	// }
 }
 </script>
 
@@ -65,6 +43,7 @@ export default {
 	/* 0.5 second transition effect to slide in the sidenav */
 	// display: none;
 	transition: right 0.2s linear;
+	// transition: right 0.2s cubic-bezier(.82,-0.43,.2,1.58);
 
 	&.opened {
 		// display: block;

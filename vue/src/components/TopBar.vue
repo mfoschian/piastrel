@@ -3,7 +3,7 @@
 		<div class="title">
 			<slot><h3 v-if="title">{{ title }}</h3></slot>
 			<!-- <h3>Piastrel</h3> -->
-			<h3><i class="bi-gear clickable" @click="$emit('openSettings')"></i></h3>
+			<h3><i class="bi-list clickable" @click="$emit('openSettings')"></i></h3>
 		</div>
 
 		<!-- <h4><span v-if="event_name == ''" class="badge badge-warning">Scegliere l'evento</span></h4> -->
