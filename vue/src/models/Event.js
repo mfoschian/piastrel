@@ -1,5 +1,6 @@
 import Server from '../Server'
 import { ref, computed } from 'vue'
+import { dateValue } from '../libs/formatters'
 
 let _items = ref([]);
 let _active_event = ref(null);
@@ -24,6 +25,21 @@ export const Event = {
 		return _items;
 	},
 
-	get_active() { return _active_event; }
+	get_active() { return _active_event; },
+
+	new() {
+		return {
+			id: null,
+			title: null,
+			date: dateValue( new Date() ),
+			active: false
+		}
+	},
+
+	async save( ev ) {
+
+		
+
+	}
 
 };

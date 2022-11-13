@@ -1,0 +1,42 @@
+
+.mytable {
+	
+	font-size: 1.2rem;
+
+	.row {
+		
+		&:first-child {
+			background-color: var(--fifth-col);
+			font-weight: bold;
+		}
+
+		&:last-child {
+			border-bottom: 1px solid var(--fifth-col);
+		}
+
+		&:nth-child(even) {
+			background-color: var(--second-col);
+		}
+
+		.col {
+
+			padding: 0.5rem;
+			border-right: 1px solid var(--fifth-col);
+
+			&:first-child {
+				border-left: 1px solid var(--fifth-col);
+			}
+
+			&.actions {
+				text-align: right;
+				flex-grow: 0.2;
+				
+				span {
+					padding: 0.3rem;
+				}
+			}
+		}
+
+
+	}
+}

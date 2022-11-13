@@ -1,6 +1,6 @@
 const BASE_URL = 'http://localhost:3000/api'
 
-import { getJson } from './libs/json-fetch'
+import { getJson, postJson, putJson, deleteJson } from './libs/json-fetch'
 
 function _url( url ) {
 	return BASE_URL + url;
@@ -17,22 +17,18 @@ export default {
 			return [];
 		}
 	},
-	async save_event( ev ) {
-		return null;
-	},
-	async save_bucket( b ) {
-		return [];
-	},
-	async get_convocations(event_id) {
-		return [];
-	},
-	async save_convocation( conv ) {
-		return [];
-	},
-	async search_person( p ) {
-		return null;
-	},
-	async save_contact( contact ) {
-		return true;
+
+	async create( url, params ) {
+		try {
+			let res = await postJson( _url( url ), params );
+			if( ! res.item ) {
+				throw res.message || "Error posting";
+			}
+			return res.item;
+		}
+		catch( err ) {
+			console.error( 'Error posting to %s: %s', url, err );
+			throw err;
+		}
 	}
 }

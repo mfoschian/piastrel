@@ -40,7 +40,7 @@ router.post('/', async function (req, res) {
 	}
 	else {
 		let p = await Event.create( req.body );
-		res.json({ message: "New event created.", new_id: p.id });
+		res.json({ message: "New event created.", item: p });
 	}
 });
 
