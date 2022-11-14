@@ -73,7 +73,7 @@ export default {
 				id: event.id.value,
 				title: event.title.value,
 				date: event.date.value,
-				active: event.date.value
+				active: event.active.value
 			};
 
 			context.emit('save', ev);		

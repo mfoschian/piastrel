@@ -37,6 +37,7 @@
 						<EventEditor 
 							:event="edited_item"
 							@cancel="cancel"
+							@save="save"
 						/>
 					</div>
 				</div>
@@ -87,11 +88,40 @@ export default {
 			dlgVisible.value = true;
 		};
 
+		const save = async (e) => {
+			try {
+				await Event.save(e);
+				dlgVisible.value = false;
+			}
+			catch( err ) {
+				console.error( err );
+				page_error.value = err.toString();
+				dlgVisible.value = false;
+			}
+		};
+
+		const remove = async (e) => {
+			let confirmed = confirm( `Stai per cancellare l'evento "${e.title}".\nConfermi ?` );
+			if( confirmed != true )
+				return;
+
+			try {
+				await Event.remove(e.id);
+				dlgVisible.value = false;
+			}
+			catch( err ) {
+				console.error( err );
+				page_error.value = err.toString();
+				dlgVisible.value = false;
+			}
+		};
+
+
 		return {
 			items: _items,
 			newEvent,
 			cancel,
-			edit,
+			edit, save, remove,
 			page_error,
 			dlgVisible,
 			edited_item: _edited_item,

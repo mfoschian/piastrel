@@ -30,16 +30,17 @@ router.get('/:id', async function (req, res) {
 });
 
 router.post('/', async function (req, res) {
-	let fn = req.body.first_name;
-	let ln = req.body.last_name;
-	let code = req.body.code;
+	let title = req.body.title;
+	let date = req.body.date;
 
-	if (!fn || !ln || !code ) {
+	if (!title || !date ) {
 		res.status(400);
 		res.json({ message: "Bad Request" });
 	}
 	else {
-		let p = await Event.create( req.body );
+		let ids = await Event.create( req.body );
+		let new_id = ids[0];
+		let p = await Event.get(new_id);
 		res.json({ message: "New event created.", item: p });
 	}
 });
@@ -52,6 +53,7 @@ router.put('/:id', async function (req, res) {
 	}
 	else {
 		let pp = await Event.update( req.body, p.id );
+		pp = await Event.get(req.params.id);
 		if( !pp ) {
 			res.status(404);
 			res.json({ message: "Not Found" });				
@@ -61,9 +63,9 @@ router.put('/:id', async function (req, res) {
 	}
 });
 
-router.delete('/:id', function (req, res) {
+router.delete('/:id', async function (req, res) {
 
-	let ok = Event.del(req.params.id);
+	let ok = await Event.del(req.params.id);
 	if(!ok) {
 		res.status(404);
 		res.json({ message: "Not Found" });

@@ -26,7 +26,8 @@ class BaseModel {
 
 	static all() {
 		// console.log('Selecting all from %s', this.table_name);
-		return DB.me().select().from(this.table_name);
+		return DB.me().select().from(this.table_name)
+		.then( results => results.map( r => this.map_fields(r) ) );
 	}
 
 	static get(id) {
@@ -56,9 +57,9 @@ class BaseModel {
 		if( Object.keys(values).length == 0 ) {
 			return this.get(id);
 		}
-		values = this.map_fields(values);
+		// values = this.map_fields(values);
 
-		return DB.me()(this.table_name).where({ id: id || p.id }).update( values )
+		return DB.me()(this.table_name).where({ id: id || p.id }).update( values );
 	}
 
 	static upsert(p) {

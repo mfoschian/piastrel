@@ -30,5 +30,33 @@ export default {
 			console.error( 'Error posting to %s: %s', url, err );
 			throw err;
 		}
+	},
+
+	async update( url, params ) {
+		try {
+			let res = await putJson( _url( url ), params );
+			if( ! res.item ) {
+				throw res.message || "Error putting";
+			}
+			return res.item;
+		}
+		catch( err ) {
+			console.error( 'Error posting to %s: %s', url, err );
+			throw err;
+		}
+	},
+
+	async remove( url ) {
+		try {
+			let res = await deleteJson( _url( url ) );
+			if( res && res.success == true )
+				return;
+
+			throw res.message || "Error deleting";
+		}
+		catch( err ) {
+			console.error( 'Error deleting to %s: %s', url, err );
+			throw err;
+		}
 	}
 }
