@@ -71,9 +71,18 @@ async function upsert( table, item, fields ) {
 
 }
 
+async function close() {
+	if( _knex ) {
+		let k = _knex;
+		_knex = null;
+		k.destroy();
+	}
+}
+
 module.exports = {
 	init,
 	me() { return _knex },
 	upsert,
-	parse_dt
+	parse_dt,
+	close
 };

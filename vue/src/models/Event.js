@@ -27,7 +27,7 @@ export const Event = {
 	},
 
 	async load_active() {
-		let _actives = await Server.get('/events/active');
+		let _actives = await Server.get('/events/active') || {items:[]};
 		_active_event.value = adjustRecord( _actives.items[0] );
 		return _active_event;
 	},

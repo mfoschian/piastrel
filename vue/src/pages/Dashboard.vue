@@ -3,8 +3,12 @@
 		<template #topbar >
 			<h3>Gestione Scrutatori</h3>
 		</template>
-		<div class="dashboard">
-			<h4 v-if="!has_event">Nessun evento attivo: <a href="#">attivane uno</a></h4>
+		<div class="dashboard container fluid">
+			<h4 v-if="!has_event">Nessun evento attivo:
+				<router-link to="/events" >
+					<span class="badge bg-danger">attivane uno</span>
+				</router-link>
+			</h4>
 
 			<div class="convocations">
 				Convocati: {{ convocations.lenght || 'ancora nessuno'}}

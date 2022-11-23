@@ -8,6 +8,12 @@ class Convocation extends BaseModel {
 	static upd_fields = ['person_id','event_id','bucket_id','status','note'];
 	static ups_fields = ['id'].concat(this.upd_fields);
 
+	static all() {
+		// console.log('Selecting all from %s', this.table_name);
+		return this.db().select().from(this.table_name)
+		.then( results => results.map( r => this.map_fields(r) ) );
+	}
+
 
 }
 
