@@ -10,8 +10,10 @@ class Convocation extends BaseModel {
 
 	static all() {
 		// console.log('Selecting all from %s', this.table_name);
-		return this.db().select().from(this.table_name)
-		.then( results => results.map( r => this.map_fields(r) ) );
+		return this.db()
+			.select().from(this.table_name)
+			.join('persons', 'persons.id', this.table_name + '.person_id')
+			.then( results => results.map( r => this.map_fields(r) ) );
 	}
 
 

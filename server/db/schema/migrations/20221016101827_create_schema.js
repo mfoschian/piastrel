@@ -44,7 +44,7 @@ exports.up = async function(knex) {
 		table.increments('id');
 		table.integer('person_id').notNullable().index();
 		table.integer('event_id').notNullable().index();
-		table.integer('bucket_id').notNullable().index();
+		table.integer('bucket_id').nullable().index();
 		table.string('status', 20).nullable();
 		table.text('note').nullable();
 

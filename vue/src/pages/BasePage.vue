@@ -5,6 +5,10 @@
 	>
 		<slot name="topbar"></slot>
 	</TopBar>
+	<div v-if="network.error">
+		<div class="bg-danger">Errore di rete (server non raggiungibile)</div>
+		<div class="bg-danger">{{ network.message }}</div>
+	</div>
 	<slot>
 	</slot>
 	<!-- <div  v-if="error" class="errorbox">
@@ -16,6 +20,7 @@
 <script>
 
 import TopBar from '../components/TopBar.vue'
+import { NetworkStatus } from '../libs/json-fetch';
 
 export default {
 	components: { TopBar },
@@ -25,8 +30,11 @@ export default {
 	},
 	inheritAttrs: false,
 	inject: [ 'openMenu' ],
-	// async setup() {
-	// }
+	async setup() {
+		return {
+			network: NetworkStatus
+		};
+	}
 }
 </script>
 

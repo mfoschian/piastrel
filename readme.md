@@ -1,7 +1,9 @@
 # Convocation manager
 ## Setup
 1. `npm install`
-2. `npm run server`
-3. `npm run dev`
-4. Visit link
+2. `knex migrate:latest`
+3. `node server\tasks\import_persons.js`
+4. `npm run server`
+5. `npm run dev`
+6. Visit link
 

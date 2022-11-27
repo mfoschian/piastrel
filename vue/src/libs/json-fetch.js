@@ -1,3 +1,10 @@
+import { ref } from 'vue'
+
+export let NetworkStatus = ref({
+	error: false,
+	message: ''
+});
+
 export async function getJson( url, params ) {
 	let res = null;
 	try {
@@ -13,6 +20,8 @@ export async function getJson( url, params ) {
 	}
 	catch( err ) {
 		console.error( err );
+		NetworkStatus.value.error = true;
+		NetworkStatus.value.message = err.toString();
 		return null;
 	}
 
@@ -45,6 +54,8 @@ export async function sendJson( method, url, data ) {
 	}
 	catch( err ) {
 		console.error( err );
+		NetworkStatus.value.error = true;
+		NetworkStatus.value.message = err.toString();
 		return null;
 	}
 	

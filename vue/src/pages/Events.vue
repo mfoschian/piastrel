@@ -12,6 +12,12 @@
 					<span class="btn bi-plus-square-fill text-danger" @click="newEvent"></span>
 				</div>
 			</div>
+			<div v-else class="row">
+				<div class="col-12 actions align-self-center">
+					Nessun evento definito: aggiungine uno
+					<span class="btn bi-plus-square-fill text-danger" @click="newEvent"></span>
+				</div>
+			</div>
 			<div v-if="page_error" class="row">
 				<div class="col text-center error_msg bg-danger">{{ page_error }}</div>
 			</div>

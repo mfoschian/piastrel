@@ -10,15 +10,11 @@
 				</router-link>
 			</h4>
 
-			<div class="convocations">
-				Convocati: {{ convocations.lenght || 'ancora nessuno'}}
-			</div>
+			<ConvocationsBox event_id="event.id" />
 
-			<div class="buckets">
-				<div v-for="b in buckets" :key="b.id">
-					<div class="bucket">{{ b.name }}</div>
-				</div>
-			</div>
+			<BucketsBox />
+
+			
 		</div>
 	</BasePage>
 </template>
@@ -27,38 +23,27 @@
 import { computed, watchEffect } from 'vue'
 
 import BasePage from './BasePage.vue'
+import BucketsBox from '../components/BucketsBox.vue'
+import ConvocationsBox from '../components/ConvocationsBox.vue'
+
 import Application from '../models/Application'
 import { Event } from '../models/Event'
-import { Bucket } from '../models/Bucket'
-import { Convocation } from '../models/Convocation'
+
 
 export default {
-	components: { BasePage },
+	components: { BasePage, ConvocationsBox, BucketsBox },
 	async setup() {
 
 		let _event = Event.get_active(); // reactive
 		let has_event = computed( () => _event.value == null ? false : true );
 		let subtitle = computed( () => _event.value == null ? null : _event.value.title );
 
-		let _buckets = Bucket.all(); // reactive
-		let _convocations = Convocation.all(); // reactive
-
-		await Bucket.load();
 		await Event.load_active();
 
-		watchEffect( async () => {
-			console.log( 'watch effect');
-			if( _event.value != null ) {
-				console.log( 'Loading convocations for event %s...', _event.value.id );
-				await Convocation.load( _event.value.id );
-			}
-		});
 
 		return {
 			has_event, 
 			event: _event,
-			buckets: _buckets,
-			convocations: _convocations,
 			subtitle
 		};
 	}
