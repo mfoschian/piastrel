@@ -29,14 +29,13 @@ export default {
 		};
 
 		const dropcheck = (ev) => {
-			const type = ev.dataTransfer.getData("type");
-			if( type == "person" )
-				ev.preventDefault();
+			ev.preventDefault();
 		};
 
 		const dropped = async (ev, bid) => {
 			let dt = ev.dataTransfer;
 			let type = dt.getData("type");
+			// console.log(type);
 			if( type == "person" ) {
 				const pid = dt.getData("person_id");
 				if( !pid )
