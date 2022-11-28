@@ -1,9 +1,12 @@
 <template>
 	<div class="buckets" >
-		<div class="bucket" v-for="b in buckets" :key="b.id" >
+		<div class="bucket" v-for="b in buckets" :key="b.id"
+			@dragover="dropcheck"
+			@drop="dropped($event, b.id)"
+		>
 			<div class="title">{{ b.name }}</div>
 			<div class="body">
-
+				<PersonBox  v-for="c in assigned_to(b.id)" :key="c.id" :item="c" />
 			</div>
 		</div>
 	</div>
@@ -11,15 +14,47 @@
 
 <script>
 import { Bucket } from '../models/Bucket'
+import { Convocation } from '../models/Convocation'
+
+import PersonBox from '../components/PersonBox.vue'
 
 export default {
+	components: { PersonBox },
 	async setup(props) {
 		let buckets = Bucket.all(); // reactive
 
 		await Bucket.load();
+		const assigned_to = (bid) => {
+			return Convocation.inBucket(bid);
+		};
+
+		const dropcheck = (ev) => {
+			const type = ev.dataTransfer.getData("type");
+			if( type == "person" )
+				ev.preventDefault();
+		};
+
+		const dropped = async (ev, bid) => {
+			let dt = ev.dataTransfer;
+			let type = dt.getData("type");
+			if( type == "person" ) {
+				const pid = dt.getData("person_id");
+				if( !pid )
+					return;
+
+				let c = Convocation.ofPerson(pid);
+				if( c ) {
+					// TODO: update convocation
+					c.bucket_id = bid;
+				}
+			}
+		};
 
 		return {
-			buckets
+			buckets,
+			dropcheck,
+			dropped,
+			assigned_to
 		}
 	}
 }

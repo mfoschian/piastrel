@@ -15,6 +15,16 @@ export const Convocation = {
 
 	all() {
 		return _items;
+	},
+
+	ofPerson(id) {
+		let c = _items.value.filter( c => c.person_id == id )[0];
+		return c;
+	},
+
+	inBucket(id) {
+		let bb = _items.value.filter( c => c.bucket_id == id );
+		return bb;
 	}
 
 };
