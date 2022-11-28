@@ -61,10 +61,12 @@ export const Event = {
 			let items = _items.value;
 			for( let i=0; i<items.length; i++ ) {
 				if( items[i].id == ev.id ) {
-					_items.value[i] = adjustRecord( res );
+					let r = adjustRecord( res );
+					_items.value[i] = r;
+					return r;
 				}
 			}
-			return res;		
+			return res;
 		}
 	},
 

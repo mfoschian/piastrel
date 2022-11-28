@@ -42,6 +42,7 @@ router.put('/:id', async function (req, res) {
 	}
 	else {
 		let pp = await Convocation.update( req.body, p.id );
+		pp = await Convocation.get(p.id);
 		if( !pp ) {
 			res.status(404);
 			res.json({ message: "Not Found" });				

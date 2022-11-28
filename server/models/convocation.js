@@ -16,6 +16,18 @@ class Convocation extends BaseModel {
 			.then( results => results.map( r => this.map_fields(r) ) );
 	}
 
+	static get(id) {
+		return this.db()
+			.select().from(this.table_name)
+			.join('persons', 'persons.id', this.table_name + '.person_id')
+			.where( { 'convocations.id': id } )
+			.then( results => {
+				if( results )
+					return this.map_fields(results[0]);
+				else return null;
+			});
+	}
+
 
 }
 

@@ -42,11 +42,7 @@ export default {
 				if( !pid )
 					return;
 
-				let c = Convocation.ofPerson(pid);
-				if( c ) {
-					// TODO: update convocation
-					c.bucket_id = bid;
-				}
+				await Convocation.assign(pid, bid);
 			}
 		};
 
