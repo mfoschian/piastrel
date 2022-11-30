@@ -15,6 +15,11 @@ export const Bucket = {
 
 	all() {
 		return _items;
+	},
+
+	get(id) {
+		let b = _items.value.filter( b => b.id == id )[0];
+		return b;		
 	}
 
 };

@@ -24,6 +24,10 @@ class BaseModel {
 		return DB.me().table(this.table_name);
 	}
 
+	static table_as(alias) {
+		return DB.me().table(this.table_name + ' as ' + alias);
+	}
+
 	static all() {
 		// console.log('Selecting all from %s', this.table_name);
 		return DB.me().select().from(this.table_name)

@@ -10,28 +10,50 @@
 				</router-link>
 			</h4>
 
-			<ConvocationsBox event_id="event.id" />
+			<template v-else>
+				<ConvocationsBox event_id="event.id" @details="openDetails" />
 
-			<BucketsBox />
+				<BucketsBox @details="openDetails" />
 
-			
+				<RejectedBox @details="openDetails" />
+			</template>
+
+			<div class="modal fade" :class="{ show: detailsVisible, 'd-block': detailsVisible }">
+			<div class="modal-dialog modal-xl">
+				<div class="modal-content">
+					<div class="modal-header">
+						<div class="modal-title">Dettaglio Persona</div>
+						<button type="button" class="btn-close" @click="detailsVisible=false"></button>
+					</div>
+					<div class="modal-body">
+						<ConvocatedPersonDetails :item="convocation"
+							@cancel="detailsVisible=false"
+							@saveStatus="saveStatus"
+						/>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		</div>
 	</BasePage>
 </template>
 
 <script>
-import { computed, watchEffect } from 'vue'
+import { computed, ref } from 'vue'
 
 import BasePage from './BasePage.vue'
 import BucketsBox from '../components/BucketsBox.vue'
 import ConvocationsBox from '../components/ConvocationsBox.vue'
+import ConvocatedPersonDetails from '../components/ConvocatedPersonDetails.vue'
+import RejectedBox from '../components/RejectedBox.vue'
 
-import Application from '../models/Application'
 import { Event } from '../models/Event'
+import { Convocation } from '../models/Convocation'
 
 
 export default {
-	components: { BasePage, ConvocationsBox, BucketsBox },
+	components: { BasePage, ConvocationsBox, BucketsBox, RejectedBox, ConvocatedPersonDetails },
 	async setup() {
 
 		let _event = Event.get_active(); // reactive
@@ -40,11 +62,34 @@ export default {
 
 		await Event.load_active();
 
+		let detailsVisible = ref(false);
+		let convocation = ref({});
+
+		const openDetails = (pid) => {
+			let c = Convocation.ofPerson(pid);
+			convocation.value = c;
+			detailsVisible.value = true;
+		};
+
+		const saveStatus = async (new_status) => {
+			let c = convocation.value;
+			let upd = {
+				id: c.id,
+				status: new_status
+			}
+			let res = await Convocation.save(upd);
+			detailsVisible.value = false;
+		};
 
 		return {
 			has_event, 
 			event: _event,
-			subtitle
+			subtitle,
+
+			detailsVisible,
+			convocation,
+			openDetails,
+			saveStatus
 		};
 	}
 }

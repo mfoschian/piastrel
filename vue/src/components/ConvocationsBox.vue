@@ -1,7 +1,10 @@
 <template>
-<div class="convocation-box">
+<div class="convocation-box"
+	@dragover="dropcheck"
+	@drop="dropped($event, null)"
+>
 	<div class="title">
-		Convocati: {{ convocations.lenght || 'ancora nessuno'}}
+		Convocati: {{ convocations.length || 'ancora nessuno'}}
 		<button
 			class="btn btn-info btn-sm btn-info"
 			title="aggiungi"
@@ -11,7 +14,7 @@
 		</button>
 	</div>
 	<div class="body">
-		<PersonBox  v-for="c in unassigned" :key="c.id" :item="c" />
+		<ConvocatedPersonBox  v-for="c in unassigned" :key="c.id" :item="c"  @details="$emit('details',$event)"/>
 	</div>
 </div>
 </template>
@@ -19,12 +22,13 @@
 <script>
 import { watchEffect, computed } from 'vue'
 
-import PersonBox from '../components/PersonBox.vue'
+import ConvocatedPersonBox from '../components/ConvocatedPersonBox.vue'
+import { dropcheck, dropped } from './ConvocatedPersonBox.vue'
 
 import { Convocation } from '../models/Convocation'
 
 export default {
-	components: { PersonBox },
+	components: { ConvocatedPersonBox },
 	props: {
 		event_id: { type: [String,Number], required: true }
 	},
@@ -33,6 +37,7 @@ export default {
 
 		const _unassigned = computed( () => {
 			let cc = _convocations.value || [];
+			// return cc.filter( c => c.bucket_id == null && c.status != Convocation.status.rejected );
 			return cc.filter( c => c.bucket_id == null );
 		});
 
@@ -53,7 +58,8 @@ export default {
 		return {
 			convocations: _convocations,
 			unassigned: _unassigned,
-			add_person
+			add_person,
+			dropcheck, dropped
 		}
 	}
 }

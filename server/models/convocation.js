@@ -11,16 +11,16 @@ class Convocation extends BaseModel {
 	static all() {
 		// console.log('Selecting all from %s', this.table_name);
 		return this.db()
-			.select().from(this.table_name)
-			.join('persons', 'persons.id', this.table_name + '.person_id')
+			.select().from(this.table_name + ' as c')
+			.join('persons', 'persons.id', 'c.person_id')
 			.then( results => results.map( r => this.map_fields(r) ) );
 	}
 
 	static get(id) {
 		return this.db()
-			.select().from(this.table_name)
-			.join('persons', 'persons.id', this.table_name + '.person_id')
-			.where( { 'convocations.id': id } )
+			.select().from(this.table_name +' as c')
+			.join('persons', 'persons.id', 'c.person_id')
+			.where( { 'c.id': id } )
 			.then( results => {
 				if( results )
 					return this.map_fields(results[0]);

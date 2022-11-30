@@ -1,9 +1,17 @@
 import Server from '../Server'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 let _items = ref([]);
 
+const Status = {
+	unknown: 'convocated',
+	accepted: 'accepted',
+	rejected: 'rejected',
+	confirmed: 'confirmed'
+};
+
 export const Convocation = {
+	status: Status,
 
 	async load() {
 		let result = await Server.get('/convocations');
@@ -27,7 +35,7 @@ export const Convocation = {
 		return bb;
 	},
 
-	async assign(pid, bid) {
+	async assign(pid, bid, status) {
 
 		let c = Convocation.ofPerson(pid);
 		if( !c )
@@ -38,6 +46,9 @@ export const Convocation = {
 			person_id: c.person_id,
 			bucket_id: bid
 		};
+		if( typeof(status) != 'undefined') {
+			upd.status = status;
+		}
 
 		let res = await Convocation.save(upd);
 		c.bucket_id = res.bucket_id;
@@ -88,3 +99,10 @@ export const Convocation = {
 	}
 
 };
+
+export const Stats = {
+	rejected: computed( () => {
+		let cc = _items.value || [];
+		return cc.filter( c => c.status == Convocation.status.rejected);
+	})
+}

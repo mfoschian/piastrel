@@ -6,7 +6,7 @@
 		>
 			<div class="title">{{ b.name }}</div>
 			<div class="body">
-				<PersonBox  v-for="c in assigned_to(b.id)" :key="c.id" :item="c" />
+				<ConvocatedPersonBox  v-for="c in assigned_to(b.id)" :key="c.id" :item="c"  @details="$emit('details',$event)"/>
 			</div>
 		</div>
 	</div>
@@ -16,33 +16,17 @@
 import { Bucket } from '../models/Bucket'
 import { Convocation } from '../models/Convocation'
 
-import PersonBox from '../components/PersonBox.vue'
+import ConvocatedPersonBox from './ConvocatedPersonBox.vue'
+import { dropcheck, dropped } from './ConvocatedPersonBox.vue'
 
 export default {
-	components: { PersonBox },
+	components: { ConvocatedPersonBox },
 	async setup(props) {
 		let buckets = Bucket.all(); // reactive
 
 		await Bucket.load();
 		const assigned_to = (bid) => {
 			return Convocation.inBucket(bid);
-		};
-
-		const dropcheck = (ev) => {
-			ev.preventDefault();
-		};
-
-		const dropped = async (ev, bid) => {
-			let dt = ev.dataTransfer;
-			let type = dt.getData("type");
-			// console.log(type);
-			if( type == "person" ) {
-				const pid = dt.getData("person_id");
-				if( !pid )
-					return;
-
-				await Convocation.assign(pid, bid);
-			}
 		};
 
 		return {
@@ -73,7 +57,8 @@ export default {
 		padding: 0.5em;
 		border: 1px solid var(--fourth-col);
 		border-radius: var(--bs-border-radius);
-		box-shadow: 3px 5px 2px rgba(0,0,0,0.94);
+		// box-shadow: 3px 5px 2px rgba(0,0,0,0.94);
+		box-shadow: 3px 3px 3px var(--fourth-col);
 
 		.title {
 			border-bottom: 1px solid var(--fourth-col);

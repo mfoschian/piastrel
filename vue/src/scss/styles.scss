@@ -2,13 +2,20 @@
 @import "bootstrap-icons/font/bootstrap-icons.css";
 
 :root {
-	--main-col: #3580c2;
+	--main-col: black;
+	// --main-col: #3580c2;
 	--second-col: #00a2d5;
 	--third-col: #00c0cc;
 	--fourth-col: #00daae;
 	--fifth-col: #f9f871;
 
 	--green-btn: #28a745;
+
+	--main-text-col: white;
+	--fifth-text-col: #444443;
+
+
+
 }
 
 
@@ -16,9 +23,15 @@
 body {
 	/*background-color: white;*/
 	/*background-color: #68b3a5;*/
-	background-color: #3580c2;
+	background-color: var(--main-col);
+	color: var(--main-text-col);
+	--bs-body-color: var(--main-text-col);	
 }
 
+.modal-content {
+	color: black;
+	// --bs-modal-color: black;
+}
 
 @import "./forms.scss";
 
