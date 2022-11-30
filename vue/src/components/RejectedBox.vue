@@ -7,7 +7,11 @@
 		Rinunce: {{ rejected.length }}
 	</div>
 	<div class="body">
-		<ConvocatedPersonBox  v-for="c in rejected" :key="c.id" :item="c" @details="$emit('details',$event)"/>
+		<ConvocatedPersonBox  v-for="c in rejected" :key="c.id"
+			:item="c"
+			:read_only="read_only"
+			@details="$emit('details',$event)"
+		/>
 	</div>
 </div>
 </template>
@@ -23,7 +27,7 @@ import { Convocation, Stats } from '../models/Convocation'
 export default {
 	components: { ConvocatedPersonBox },
 	props: {
-		// event_id: { type: [String,Number], required: true }
+		read_only: { type: Boolean, default: false }
 	},
 	setup(props, context) {
 		let _convocations = Convocation.all(); // reactive

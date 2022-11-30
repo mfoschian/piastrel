@@ -22,7 +22,7 @@
 				<div class="col text-center error_msg bg-danger">{{ page_error }}</div>
 			</div>
 			<div v-for="e in items" :key="e.id" class="row">
-				<div class="col">{{e.title}}</div>
+				<div class="col"><router-link :to="{name: 'dashboard', params: {event_id: e.id}}">{{e.title}}</router-link></div>
 				<div class="col">{{e.date}}</div>
 				<div class="col">{{e.active ? 'Attivo' : 'Chiuso'}}</div>
 				<div class="col actions">
@@ -65,7 +65,8 @@ export default {
 	async setup(props,context) {
 
 		const max_items = 20;
-		let _items = await Event.load( max_items ); // reactive !
+
+		let _items = await Event.get( max_items ); // reactive !
 
 		let _edited_item = ref(Event.new());
 		let editor_title = computed( () => _edited_item.value.id == null ? "Nuovo Evento" : "Modifica Evento" );

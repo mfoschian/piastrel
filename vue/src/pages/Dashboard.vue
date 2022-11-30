@@ -11,11 +11,11 @@
 			</h4>
 
 			<template v-else>
-				<ConvocationsBox event_id="event.id" @details="openDetails" />
+				<ConvocationsBox :event_id="event.id" @details="openDetails" :read_only="read_only" />
 
-				<BucketsBox @details="openDetails" />
+				<BucketsBox @details="openDetails" :read_only="read_only" />
 
-				<RejectedBox @details="openDetails" />
+				<RejectedBox @details="openDetails" :read_only="read_only" />
 			</template>
 
 			<div class="modal fade" :class="{ show: detailsVisible, 'd-block': detailsVisible }">
@@ -29,6 +29,7 @@
 						<ConvocatedPersonDetails :item="convocation"
 							@cancel="detailsVisible=false"
 							@saveStatus="saveStatus"
+							:read_only="read_only"
 						/>
 					</div>
 				</div>
@@ -40,7 +41,7 @@
 </template>
 
 <script>
-import { computed, ref } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 
 import BasePage from './BasePage.vue'
 import BucketsBox from '../components/BucketsBox.vue'
@@ -54,13 +55,16 @@ import { Convocation } from '../models/Convocation'
 
 export default {
 	components: { BasePage, ConvocationsBox, BucketsBox, RejectedBox, ConvocatedPersonDetails },
-	async setup() {
+	props: {
+		event_id: { type: [String,Number], default: null }
+	},
+	async setup(props) {
 
 		let _event = Event.get_active(); // reactive
 		let has_event = computed( () => _event.value == null ? false : true );
-		let subtitle = computed( () => _event.value == null ? null : _event.value.title );
-
-		await Event.load_active();
+		let subtitle = computed( () => _event.value == null ? null : 
+			_event.value.active ? _event.value.title : _event.value.title + ' (chiuso)'
+		);
 
 		let detailsVisible = ref(false);
 		let convocation = ref({});
@@ -81,6 +85,15 @@ export default {
 			detailsVisible.value = false;
 		};
 
+		let read_only = computed( () => {
+			return !has_event || _event.value == null || !_event.value.active;
+		});
+
+		watchEffect( async () => {
+			Convocation.clear();
+			await Event.load(props.event_id);
+		});
+
 		return {
 			has_event, 
 			event: _event,
@@ -89,7 +102,9 @@ export default {
 			detailsVisible,
 			convocation,
 			openDetails,
-			saveStatus
+			saveStatus,
+
+			read_only
 		};
 	}
 }

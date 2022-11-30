@@ -6,12 +6,16 @@ import EventPage from './pages/Events.vue'
 
 const routes = [
 	{
+		name: 'home',
 		path: '/',
 		component: DashboardPage,
-		// props: route => ({
-		// 	at: route.query.at,
-		// 	room: route.query.room
-		// })
+		props: { event_id: null }
+	},
+	{
+		name: 'dashboard',
+		path: '/events/:event_id/manage',
+		component: DashboardPage,
+		props: true
 	},
 	{
 		path: '/events',

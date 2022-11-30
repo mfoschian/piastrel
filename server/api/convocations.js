@@ -5,7 +5,13 @@ let Convocation = require('../models/convocation.js')
 
 
 router.get('/', async function (req, res) {
-	let items = await Convocation.all();
+	let items = [];
+	if( req.query.event != null ) {
+		console.log('reading convocations of event %s', req.query.event);
+		items = await Convocation.of_event( req.query.event );
+	}
+	else
+		items = await Convocation.all();
 	res.json({items});
 });
 

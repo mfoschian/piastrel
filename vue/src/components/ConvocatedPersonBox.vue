@@ -1,7 +1,7 @@
 <template>
 	<div class="person" 
-		:class="[{draggable: draggable, dragging: dragging  },status_class]"
-		:draggable="draggable"
+		:class="[{draggable: is_draggable, dragging: dragging  },status_class]"
+		:draggable="is_draggable"
 		@dragstart="dragme($event)"
 		@dragend="dragstop"
 	>
@@ -22,7 +22,8 @@ import { Convocation } from '../models/Convocation';
 export default {
 	props: {
 		item: { type: Object, required: true },
-		draggable: { type: Boolean, default: true }
+		draggable: { type: Boolean, default: true },
+		read_only: { type: Boolean, default: true }
 	},
 	emits: [ 'details' ],
 	setup(props, context) {
@@ -41,20 +42,12 @@ export default {
 			dragging.value = false;
 		};
 
+		let is_draggable = computed( () => {
+			return props.draggable && !props.read_only;
+		});
+
 		const openInfoBox = () => {
 			context.emit('details', props.item.person_id );
-			/*
-			let c = Convocation.ofPerson(props.item.person_id);
-			let new_status = Convocation.status.unknown;
-			switch( c.status ) {
-				case Convocation.status.unknown: new_status = Convocation.status.accepted; break;
-				case Convocation.status.accepted: new_status = Convocation.status.confirmed; break;
-				case Convocation.status.confirmed: new_status = Convocation.status.rejected; break;
-				case Convocation.status.rejected: new_status = Convocation.status.unknown; break;
-			}
-			// console.log( '%s -> %s', c.status, new_status);
-			c.status = new_status;
-			*/
 		};
 
 		const status_class = computed( () => {
@@ -80,7 +73,7 @@ export default {
 
 		return {
 			dragme, dragstop,
-			dragging,
+			dragging, is_draggable,
 			openInfoBox, status_class, status_icon
 		}
 	}

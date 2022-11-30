@@ -13,12 +13,21 @@ const Status = {
 export const Convocation = {
 	status: Status,
 
-	async load() {
-		let result = await Server.get('/convocations');
+	async load(event_id) {
+
+		let url = '/convocations';
+		if(event_id)
+			url += '?event=' + event_id;
+
+		let result = await Server.get(url);
 		if( result && result.items )
 			_items.value = result.items;
 		else
 			_items.value = [];
+	},
+
+	clear() {
+		_items.value = [];
 	},
 
 	all() {
@@ -40,7 +49,7 @@ export const Convocation = {
 		let c = Convocation.ofPerson(pid);
 		if( !c )
 			return null;
-		
+
 		let upd = {
 			id: c.id,
 			person_id: c.person_id,

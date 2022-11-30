@@ -6,7 +6,11 @@
 		>
 			<div class="title">{{ b.name }}</div>
 			<div class="body">
-				<ConvocatedPersonBox  v-for="c in assigned_to(b.id)" :key="c.id" :item="c"  @details="$emit('details',$event)"/>
+				<ConvocatedPersonBox  v-for="c in assigned_to(b.id)" :key="c.id"
+					:item="c" 
+					:read_only="read_only"
+					@details="$emit('details',$event)"
+				/>
 			</div>
 		</div>
 	</div>
@@ -21,6 +25,9 @@ import { dropcheck, dropped } from './ConvocatedPersonBox.vue'
 
 export default {
 	components: { ConvocatedPersonBox },
+	props: {
+		read_only: { type: Boolean, default: false }
+	},
 	async setup(props) {
 		let buckets = Bucket.all(); // reactive
 

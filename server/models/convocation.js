@@ -16,6 +16,15 @@ class Convocation extends BaseModel {
 			.then( results => results.map( r => this.map_fields(r) ) );
 	}
 
+	static of_event(event_id) {
+		// console.log('Selecting all from %s', this.table_name);
+		return this.db()
+			.select().from(this.table_name + ' as c')
+			.join('persons', 'persons.id', 'c.person_id')
+			.where( {'c.event_id': event_id })
+			.then( results => results.map( r => this.map_fields(r) ) );
+	}
+
 	static get(id) {
 		return this.db()
 			.select().from(this.table_name +' as c')

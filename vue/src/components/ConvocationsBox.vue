@@ -5,7 +5,7 @@
 >
 	<div class="title">
 		Convocati: {{ convocations.length || 'ancora nessuno'}}
-		<button
+		<button v-if="!read_only"
 			class="btn btn-info btn-sm btn-info"
 			title="aggiungi"
 			@click="add_person"
@@ -14,7 +14,11 @@
 		</button>
 	</div>
 	<div class="body">
-		<ConvocatedPersonBox  v-for="c in unassigned" :key="c.id" :item="c"  @details="$emit('details',$event)"/>
+		<ConvocatedPersonBox  v-for="c in unassigned" :key="c.id"
+			:item="c"
+			@details="$emit('details',$event)"
+			:read_only="read_only"
+		/>
 	</div>
 </div>
 </template>
@@ -30,7 +34,8 @@ import { Convocation } from '../models/Convocation'
 export default {
 	components: { ConvocatedPersonBox },
 	props: {
-		event_id: { type: [String,Number], required: true }
+		event_id: { type: [String,Number], default: null },
+		read_only: { type: Boolean, default: false }
 	},
 	setup(props, context) {
 		let _convocations = Convocation.all(); // reactive
@@ -51,6 +56,9 @@ export default {
 			if( props.event_id != null ) {
 				console.log( 'Loading convocations for event %s...', props.event_id );
 				await Convocation.load( props.event_id );
+			}
+			else {
+				Convocation.clear();
 			}
 		});
 

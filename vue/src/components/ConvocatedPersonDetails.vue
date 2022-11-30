@@ -30,6 +30,7 @@
 				v-model="status"
 				class="form-control"
 				@change="changeStatus"
+				:disabled="read_only"
 			>
 				<option value="convocated">Invitato</option>
 				<option value="accepted">Accettato</option>
@@ -38,7 +39,7 @@
 			</select>
 		</div>
 		<div class="buttons">
-			<button @click="save" class="btn btn-danger" :disabled="!save_enabled">Salva</button>
+			<button @click="save" class="btn btn-danger" :disabled="(!save_enabled || read_only)">Salva</button>
 			<button @click="$emit('cancel')" class="btn btn-secondary">Annulla</button>
 		</div>
 	</form>
@@ -51,7 +52,8 @@ import { Bucket } from '../models/Bucket';
 
 export default {
 	props: {
-		item: { type: Object, required: true }
+		item: { type: Object, required: true },
+		read_only: { type: Boolean, default: false },
 	},
 	emits: ['cancel', 'saveStatus' ],
 	setup(props, context) {
@@ -75,6 +77,9 @@ export default {
 		};
 
 		const save = () => {
+			if( props.read_only )
+				return;
+
 			let new_status = status.value;
 			context.emit('saveStatus', new_status);
 		};

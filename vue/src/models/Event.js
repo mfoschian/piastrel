@@ -13,10 +13,15 @@ function adjustRecord( r ) {
 
 export const Event = {
 
-	async load( limit ) {
+	async get( limit ) {
 		let lim = parseInt(limit);
 		lim = isNaN(lim) ? 20 : lim;
 		let result = await Server.get('/events', {limit: lim});
+		if( result == null ) {
+			_items.value = [];
+			return _items;
+		}
+
 		if( result.items ) {
 			for( let i=0; i<result.items.length; i++ ) {
 				adjustRecord( result.items[i] );
@@ -26,9 +31,10 @@ export const Event = {
 		return _items;
 	},
 
-	async load_active() {
-		let _actives = await Server.get('/events/active') || {items:[]};
-		_active_event.value = adjustRecord( _actives.items[0] );
+	async load(id) {
+		let event_id = id || 'active';
+		let _active = await Server.get('/events/' + event_id);
+		_active_event.value = adjustRecord( _active );
 		return _active_event;
 	},
 
