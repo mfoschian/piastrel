@@ -2,6 +2,7 @@ import Server from '../Server'
 import { computed, ref } from 'vue'
 
 let _items = ref([]);
+const BASE_URL = '/convocations';
 
 const Status = {
 	unknown: 'convocated',
@@ -15,7 +16,7 @@ export const Convocation = {
 
 	async load(event_id) {
 
-		let url = '/convocations';
+		let url = BASE_URL;
 		if(event_id)
 			url += '?event=' + event_id;
 
@@ -105,6 +106,10 @@ export const Convocation = {
 				_items.value.splice(i,1);
 			}
 		}
+	},
+
+	confirmPdfUrl( id ) {
+		return Server.url_for(BASE_URL + '/' + id + '/confirmation.pdf');
 	}
 
 };

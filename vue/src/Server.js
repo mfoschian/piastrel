@@ -7,6 +7,8 @@ function _url( url ) {
 }
 
 export default {
+	url_for: _url,
+
 	async get( url, params ) {
 		try {
 			let items = getJson( _url( url ), params );
