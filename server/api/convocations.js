@@ -1,7 +1,8 @@
 const express = require('express');
 let router = express.Router();
 
-let Convocation = require('../models/convocation.js')
+let Convocation = require('../models/convocation.js');
+let ConvConfirmPdf = require('../pdf/ConvocationConfirmPdf.js');
 
 
 router.get('/', async function (req, res) {
@@ -19,6 +20,19 @@ router.get('/:id', async function (req, res) {
 	let item = await Convocation.get(req.params.id);
 	if (item != null) {
 		res.json( item )
+	} else {
+		res.status(404);
+		res.json({ message: "Not Found" });
+	}
+});
+
+router.get('/:id/confirmation.pdf', async function (req, res) {
+	let item = await Convocation.get(req.params.id);
+	if (item != null) {
+		let filename = 'convoc_' + item.code + '.pdf';
+		let pdf = new ConvConfirmPdf(filename);
+		pdf.render(item);
+		pdf.send(req, res);
 	} else {
 		res.status(404);
 		res.json({ message: "Not Found" });
