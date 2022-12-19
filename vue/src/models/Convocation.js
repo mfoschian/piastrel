@@ -68,13 +68,15 @@ export const Convocation = {
 		return {
 			id: null,
 			person_id: null,
-			bucket_id: null
+			bucket_id: null,
+			status: Status.unknown
 		}
 	},
 
 	async save( c ) {
 		if( c && c.id == null ) {
-			let res = await Server.create('/convocations', c);
+			let new_id = await Server.create('/convocations', c);
+			let res = await Server.get('/convocations/' + new_id);
 			if( res ) {
 				_items.value.push( res );
 			}
@@ -117,6 +119,6 @@ export const Convocation = {
 export const Stats = {
 	rejected: computed( () => {
 		let cc = _items.value || [];
-		return cc.filter( c => c.status == Convocation.status.rejected);
+		return cc.filter( c => c.status == Convocation.status.rejected );
 	})
 }

@@ -4,6 +4,12 @@ let router = express.Router();
 let Person = require('../models/person.js')
 
 
+router.get('/search', async function (req, res) {
+	let q = req.query.q || '';
+	let items = await Person.search_by_name(req.query.q) || [];
+	res.json( {items} );
+});
+
 router.get('/', async function (req, res) {
 	let items = await Person.all();
 	res.json({items});
@@ -61,8 +67,6 @@ router.delete('/:id', function (req, res) {
 	else
 		res.send({success: true});
 });
-
-
 
 contact_router = express.Router({mergeParams: true});
 let Contact = require('../models/contact.js');

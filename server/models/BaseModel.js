@@ -48,7 +48,15 @@ class BaseModel {
 	}
 	
 	static create(p) {
-		return DB.me()(this.table_name).insert( p );
+		return DB.me()(this.table_name).insert( p )
+			.then( res => {
+				if( Array.isArray(res) ) {
+					let id = res[0];
+					return {id};
+				}
+				else
+					return res;
+			});
 	}
 
 	static update(p, id) {

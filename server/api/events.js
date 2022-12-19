@@ -38,10 +38,8 @@ router.post('/', async function (req, res) {
 		res.json({ message: "Bad Request" });
 	}
 	else {
-		let ids = await Event.create( req.body );
-		let new_id = ids[0];
-		let p = await Event.get(new_id);
-		res.json({ message: "New event created.", item: p });
+		let ev = await Event.create( req.body );
+		res.json({ message: "New event created.", new_id: ev.id });
 	}
 });
 

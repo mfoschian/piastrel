@@ -23,10 +23,10 @@ export default {
 	async create( url, params ) {
 		try {
 			let res = await postJson( _url( url ), params );
-			if( ! res.item ) {
+			if( ! res.new_id ) {
 				throw res.message || "Error posting";
 			}
-			return res.item;
+			return res.new_id;
 		}
 		catch( err ) {
 			console.error( 'Error posting to %s: %s', url, err );

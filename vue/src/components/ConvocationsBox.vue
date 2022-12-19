@@ -33,6 +33,7 @@ import { Convocation } from '../models/Convocation'
 
 export default {
 	components: { ConvocatedPersonBox },
+	emits: ['openSearchBox','details'],
 	props: {
 		event_id: { type: [String,Number], default: null },
 		read_only: { type: Boolean, default: false }
@@ -48,6 +49,7 @@ export default {
 
 		const add_person = async () => {
 			console.log( 'Adding person' );
+			context.emit('openSearchBox');
 		}
 
 

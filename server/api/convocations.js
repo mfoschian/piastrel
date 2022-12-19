@@ -42,9 +42,10 @@ router.get('/:id/confirmation.pdf', async function (req, res) {
 router.post('/', async function (req, res) {
 	let person_id = req.body.person_id;
 	let event_id = req.body.event_id;
-	let bucket_id = req.body.bucket_id;
+	// let bucket_id = req.body.bucket_id;
 
-	if (!person_id || !event_id || !bucket_id) {
+	// if (!person_id || !event_id || !bucket_id) {
+	if (!person_id || !event_id) {
 		res.status(400);
 		res.json({ message: "Bad Request" });
 	}

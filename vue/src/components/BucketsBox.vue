@@ -25,6 +25,7 @@ import { dropcheck, dropped } from './ConvocatedPersonBox.vue'
 
 export default {
 	components: { ConvocatedPersonBox },
+	emits: ['details'],
 	props: {
 		read_only: { type: Boolean, default: false }
 	},

@@ -11,7 +11,10 @@
 			</h4>
 
 			<template v-else>
-				<ConvocationsBox :event_id="event.id" @details="openDetails" :read_only="read_only" />
+				<ConvocationsBox :event_id="event.id" :read_only="read_only"
+					@openSearchBox="searchVisible=true"
+					@details="openDetails"
+				/>
 
 				<BucketsBox @details="openDetails" :read_only="read_only" />
 
@@ -36,6 +39,21 @@
 			</div>
 		</div>
 
+			<div class="modal fade" :class="{ show: searchVisible, 'd-block': searchVisible }">
+			<div class="modal-dialog modal-xl">
+				<div class="modal-content">
+					<div class="modal-header">
+						<div class="modal-title">Ricerca Persona</div>
+						<button type="button" class="btn-close" @click="searchVisible=false"></button>
+					</div>
+					<div class="modal-body">
+						<PersonSearch @selected="addPerson" />
+					</div>
+				</div>
+			</div>
+
+		</div>
+
 		</div>
 	</BasePage>
 </template>
@@ -48,13 +66,14 @@ import BucketsBox from '../components/BucketsBox.vue'
 import ConvocationsBox from '../components/ConvocationsBox.vue'
 import ConvocatedPersonDetails from '../components/ConvocatedPersonDetails.vue'
 import RejectedBox from '../components/RejectedBox.vue'
+import PersonSearch from '../components/PersonSearch.vue'
 
 import { Event } from '../models/Event'
 import { Convocation } from '../models/Convocation'
 
 
 export default {
-	components: { BasePage, ConvocationsBox, BucketsBox, RejectedBox, ConvocatedPersonDetails },
+	components: { BasePage, ConvocationsBox, BucketsBox, RejectedBox, ConvocatedPersonDetails, PersonSearch },
 	props: {
 		event_id: { type: [String,Number], default: null }
 	},
@@ -67,6 +86,7 @@ export default {
 		);
 
 		let detailsVisible = ref(false);
+		let searchVisible = ref(false);
 		let convocation = ref({});
 
 		const openDetails = (pid) => {
@@ -94,6 +114,15 @@ export default {
 			await Event.load(props.event_id);
 		});
 
+		const addPerson = async (p) => {
+			console.log('choosed person %s', p.code);
+			let c = Convocation.new();
+			c.person_id = p.id;
+			c.event_id = _event.value.id;
+			let res = await Convocation.save(c);
+			searchVisible.value = false;
+		};
+
 		return {
 			has_event, 
 			event: _event,
@@ -103,6 +132,9 @@ export default {
 			convocation,
 			openDetails,
 			saveStatus,
+
+			searchVisible,
+			addPerson,
 
 			read_only
 		};

@@ -55,7 +55,8 @@ export const Event = {
 
 	async save( ev ) {
 		if( ev && ev.id == null ) {
-			let res = await Server.create('/events', ev);
+			let new_id = await Server.create('/events', ev);
+			let res = await Server.get('/events/' + new_id);
 			if( res ) {
 				_items.value.push( adjustRecord( res ) );
 			}
