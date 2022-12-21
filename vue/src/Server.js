@@ -51,6 +51,9 @@ export default {
 	async remove( url ) {
 		try {
 			let res = await deleteJson( _url( url ) );
+			if(typeof(res) == 'number' && res > 0 )
+				return;
+
 			if( res && res.success == true )
 				return;
 

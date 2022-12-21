@@ -67,6 +67,26 @@
 				<!-- <span class="bi bi-file-pdf"></span> -->
 			</div>
 		</div>
+
+		<div class="row">
+			<label class="col-form-label">Contatti
+				<span class="ml-2">
+					<button class="btn btn-sm btn-outline-danger"
+						@click="addNewContact"
+						title="Nuovo Contatto"
+					>
+						<span class="bi-plus"></span>
+					</button>
+				</span>
+			</label>
+		</div>
+		<ContactBox v-for="c in contacts" :key="c.id"
+			:item="c"
+			@save="updateContact($event)"
+			@delete="deleteContact($event)"
+		/>
+
+
 		<div class="buttons">
 			<button @click="save" class="btn btn-danger" :disabled="(!save_enabled || read_only)">Salva</button>
 			<button @click="$emit('cancel')" class="btn btn-secondary">Annulla</button>
@@ -78,8 +98,11 @@
 import { ref, computed, watchEffect } from 'vue'
 import { Convocation } from '../models/Convocation';
 import { Bucket } from '../models/Bucket';
+import { Person } from '../models/Person';
+import ContactBox from '../components/ContactBox.vue';
 
 export default {
+	components: {ContactBox},
 	props: {
 		item: { type: Object, required: true },
 		read_only: { type: Boolean, default: false },
@@ -94,9 +117,13 @@ export default {
 			return b.name || "Nessuna";
 		});
 
-		watchEffect( () => {
+		let contacts = ref([]);
+
+		watchEffect( async () => {
 			status.value = props.item.status;
 			bucket_id.value = props.item.bucket_id;
+			contacts.value = await Person.contactsOf(props.item.person_id);
+			console.table(contacts.value);
 		});
 
 		let save_enabled = ref(false);
@@ -118,13 +145,50 @@ export default {
 			window.open(url,'_blank');
 		};
 
+		const updateContact = async (c) => {
+			console.log(c);
+			let res = await Person.saveContact(c);
+			let cts = contacts.value;
+			for( let i=0; i<cts.length; i++ ) {
+				if( cts[i].id == c.id ) {
+					cts[i] = res;
+					break;
+				}
+			}
+		};
+
+		const deleteContact = async (c) => {
+			console.log('deleting contact %s', c.id);
+			await Person.deleteContact(c);
+			let cts = contacts.value;
+			for( let i=0; i<cts.length; i++ ) {
+				if( cts[i].id == c.id ) {
+					cts.splice(i,1);
+					break;
+				}
+			}
+		};
+
+		const addNewContact = () => {
+			contacts.value.push({
+				id: null,
+				person_id: props.item.person_id,
+				type: 'phone',
+				value: ''
+			});
+		};
+
 		return {
 			status,
 			bucket_name,
+			contacts,
 			changeStatus,
 			save_enabled,
 			save,
-			getPdf
+			getPdf,
+			updateContact,
+			addNewContact,
+			deleteContact
 		};
 	}
 }

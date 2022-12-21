@@ -5,9 +5,9 @@
 	>
 		<slot name="topbar"></slot>
 	</TopBar>
-	<div v-if="network.error">
-		<div class="bg-danger">Errore di rete (server non raggiungibile)</div>
-		<div class="bg-danger">{{ network.message }}</div>
+	<div v-if="network.error" class="errorbox bg-danger">
+		<div >Errore di rete (server non raggiungibile)</div>
+		<div class="text-warning">{{ network.message }}</div>
 	</div>
 	<slot>
 	</slot>
@@ -38,12 +38,17 @@ export default {
 }
 </script>
 
-<style >
-/* .errorbox {
+<style lang="scss">
+.errorbox {
 	z-index: 10;
-	background-color: var(--fifth-col);
+	// background-color: var(--fifth-col);
+	border-radius: 0.5rem;
+	// border: 1px dashed yellow;
 	width: 80vw;
-	height: 80hv;
+	margin: auto;
+	padding: 0.5rem;
 	text-align: center;
-} */
+	margin-top: 2rem;
+	margin-bottom: 2rem;
+}
 </style>

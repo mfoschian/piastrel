@@ -97,7 +97,7 @@ contact_router.post('/', async function (req, res) {
 		res.json({ message: "Bad Request" });
 	}
 	else {
-		let p = await Contact.create( { preson_id, type: typ, value: val } );
+		let p = await Contact.create( { person_id, type: typ, value: val } );
 		res.json({ message: "New contact created.", new_id: p.id });
 	}
 });
@@ -119,17 +119,20 @@ contact_router.put('/:cid', async function (req, res) {
 			res.status(404);
 			res.json({ message: "Not Found" });				
 		}
-		else
-			res.json({success: true, item: pp });
+		else {
+			let upd = await Contact.get(p.id);
+			res.json({success: true, item: upd });
+		}
 	}
 });
 
 contact_router.delete('/:cid', async function (req, res) {
 
-	let p = await Contact.get(req.params.cid);
+	let id = Number(req.params.cid);
+	let p = await Contact.get(id);
 	let ok = (p && p.person_id == req.params.id);
 	if( ok )
-		ok = Contact.del(req.params.cid);
+		ok = await Contact.del(id);
 
 	if(!ok) {
 		res.status(404);
