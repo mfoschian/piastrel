@@ -4,20 +4,18 @@ let router = express.Router();
 let import_persons = require('./import_persons.js');
 
 router.post('/persons', async function (req, res) {
-	let sampleFile;
+	let personsFile;
 	let uploadPath;
 
 	if (!req.files || Object.keys(req.files).length === 0) {
 		return res.status(400).send('No files were uploaded.');
 	}
 
-	// The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-	sampleFile = req.files.sampleFile;
-	uploadPath = __dirname + '/data/' + sampleFile.name;
-
-	// Use the mv() method to place the file somewhere on your server
+	personsFile = req.files.personsFile;
+	
 	try {
-		await sampleFile.mv(uploadPath);
+		uploadPath = __dirname + '/data/' + personsFile.name;
+		await personsFile.mv(uploadPath);
 	}
 	catch( err ) {
 		console.error( 'Error moving uploaded file');
