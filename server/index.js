@@ -1,5 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser');
+const fileUpload = require('express-fileupload');
 const cors = require('cors');
 let db = require('./db');
 let options = require('./options.js')
@@ -11,12 +12,19 @@ const port = 3000;
 let books = [];
 
 app.use(cors());
+const path = require('path')
+app.use('/', express.static(path.join(__dirname, 'public')))
+app.use(fileUpload());
+
+const upload = require('./backoffice/upload.js');
+app.use('/upload',upload);
 
 // Configuring body parser middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const api = require('./api');
+const { file } = require('pdfkit');
 app.use( '/api', api );
 
 async function start_server() {
