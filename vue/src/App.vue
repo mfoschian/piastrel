@@ -33,6 +33,7 @@ export default {
 		let menus = ref([
 				{ icon: 'bi-house', label: 'Home', path: '/', active: false, tip: 'Home' },
 				{ icon: 'bi-calendar', label: 'Eventi', path: '/events', active: false, tip: 'Gestione Eventi' },
+				{ icon: 'bi-geo-alt', label: 'Sezioni', path: '/buckets', tip: 'Gestione Sezioni'}, 
 				{ icon: 'bi-upload', label: 'Upload Persons', path: '/backoffice/upload/persons', tip: 'Carica csv persone'}
 		]);
 

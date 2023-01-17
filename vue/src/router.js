@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 
 import DashboardPage from './pages/Dashboard.vue'
 import EventPage from './pages/Events.vue'
+import BucketPage from './pages/Buckets.vue'
 import UploadPersonPage from './pages/UploadPersons.vue'
 
 
@@ -21,6 +22,10 @@ const routes = [
 	{
 		path: '/events',
 		component: EventPage
+	},
+	{
+		path: '/buckets',
+		component: BucketPage
 	},
 	{
 		path: '/backoffice/upload/persons',
