@@ -36,7 +36,24 @@ export default {
 
 		const sorted_buckets = computed( () => {
 			let b = buckets.value.concat([]);
-			let res = b.sort( (b1,b2) => b1.number > b2.number ? 1 : b1.number < b2.number ? -1 : 0 );
+			let rgx = /([0-9]+).*/;
+			const startNumber= (s) => {
+				let n = Number(s);
+				if( !isNaN(n) ) return n;
+				let m = s.match(rgx);
+				if(!m) return NaN;
+				return Number(m[1]);
+			};
+			const sort_cmp = (a,b) => a > b ? 1 : a < b ? -1 : 0;
+
+			let res = b.sort( (b1,b2) => {
+				let n1 = startNumber(b1.number);
+				let n2 = startNumber(b2.number);
+				if( !isNaN(n1) && !isNaN(n2) )
+					return sort_cmp(n1,n2);
+				else
+					return sort_cmp(b1.number, b2.number);
+			});
 			return res;
 		});
 
