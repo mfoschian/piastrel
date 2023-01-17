@@ -1,5 +1,5 @@
 <template>
-	<form>
+	<form @submit.prevent>
 		<div class="form-group">
 			<label>Nome</label>
 			<input type="text"

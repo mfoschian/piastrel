@@ -28,13 +28,17 @@
 				border-left: 1px solid var(--fifth-col);
 			}
 
-			&.actions {
+			&.actions, &.actions-3 {
 				text-align: right;
 				flex-grow: 0.2;
 				
 				span {
 					padding: 0.3rem;
 				}
+			}
+
+			&.actions-3 {
+				flex-grow: 0.35;
 			}
 		}
 

@@ -35,7 +35,9 @@ exports.up = async function(knex) {
 	await knex.schema.createTable('buckets', function(table) {
 
 		table.increments('id');
+		table.string('number', 16).notNullable().index();
 		table.string('name').notNullable().index();
+		table.text('address');
 		table.string('inferred_status', 20).nullable();
 	});
 

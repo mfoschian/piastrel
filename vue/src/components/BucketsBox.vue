@@ -1,10 +1,10 @@
 <template>
 	<div class="buckets" >
-		<div class="bucket" v-for="b in buckets" :key="b.id"
+		<div class="bucket" v-for="b in sorted_buckets" :key="b.id"
 			@dragover="dropcheck"
 			@drop="dropped($event, b.id)"
 		>
-			<div class="title">{{ b.name }}</div>
+			<div class="title" :title="b.address">N.{{ b.number }} - {{  b.name }}</div>
 			<div class="body">
 				<ConvocatedPersonBox  v-for="c in assigned_to(b.id)" :key="c.id"
 					:item="c" 
@@ -23,6 +23,8 @@ import { Convocation } from '../models/Convocation'
 import ConvocatedPersonBox from './ConvocatedPersonBox.vue'
 import { dropcheck, dropped } from './ConvocatedPersonBox.vue'
 
+import { computed } from 'vue'
+
 export default {
 	components: { ConvocatedPersonBox },
 	emits: ['details'],
@@ -32,6 +34,12 @@ export default {
 	async setup(props) {
 		let buckets = Bucket.all(); // reactive
 
+		const sorted_buckets = computed( () => {
+			let b = buckets.value.concat([]);
+			let res = b.sort( (b1,b2) => b1.number > b2.number ? 1 : b1.number < b2.number ? -1 : 0 );
+			return res;
+		});
+
 		await Bucket.load();
 		const assigned_to = (bid) => {
 			return Convocation.inBucket(bid);
@@ -39,6 +47,7 @@ export default {
 
 		return {
 			buckets,
+			sorted_buckets,
 			dropcheck,
 			dropped,
 			assigned_to

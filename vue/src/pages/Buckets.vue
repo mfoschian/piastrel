@@ -5,7 +5,9 @@
 		</template>
 		<div class="container mytable">
 			<div v-if="items.length > 0" class="row">
+				<div class="col align-self-center">Numero</div>
 				<div class="col align-self-center">Nome</div>
+				<div class="col align-self-center">Indirizzo</div>
 				<div class="col actions align-self-center">
 					<span class="btn bi-plus-square-fill text-danger" @click="newBucket"></span>
 				</div>
@@ -20,9 +22,12 @@
 				<div class="col text-center error_msg bg-danger">{{ page_error }}</div>
 			</div>
 			<div v-for="e in items" :key="e.id" class="row">
+				<div class="col">{{e.number}}</div>
 				<div class="col">{{e.name}}</div>
-				<div class="col actions">
+				<div class="col">{{e.address}}</div>
+				<div class="col actions-3">
 					<span class="btn bi-pencil" @click="edit(e)"></span>
+					<span class="btn bi-back" @click="clone(e)"></span>
 					<span class="btn bi-trash" @click="remove(e)"></span>
 				</div>
 			</div>
@@ -80,7 +85,23 @@ export default {
 		const edit = (e) => {
 			let ev = {
 				id: e.id,
-				name: e.name
+				number: e.number,
+				name: e.name,
+				address: e.address
+			};
+			// debugger
+			_edited_item.value = ev;
+			dlgVisible.value = true;
+		};
+
+		const clone = (e) => {
+			// let n = Number(e.number);
+			let ev = {
+				id: null,
+				// number: isNaN(n) ? e.number : n+1,
+				number: e.number,
+				name: e.name,
+				address: e.address
 			};
 			// debugger
 			_edited_item.value = ev;
@@ -121,7 +142,7 @@ export default {
 			items: _items,
 			newBucket,
 			cancel,
-			edit, save, remove,
+			edit, save, remove, clone,
 			page_error,
 			dlgVisible,
 			edited_item: _edited_item,
@@ -133,5 +154,5 @@ export default {
 </script>
 
 <style lang="scss" >
-@import "../scss/table.scss"
+@import "../scss/table.scss";
 </style>
