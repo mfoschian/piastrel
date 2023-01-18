@@ -31,7 +31,8 @@ router.get('/:id/confirmation.pdf', async function (req, res) {
 	if (item != null) {
 		let filename = 'convoc_' + item.code + '.pdf';
 		let pdf = new ConvConfirmPdf(filename);
-		pdf.render(item);
+		let ok = pdf.tryRender(item);
+		if(!ok) console.error( 'ERROR creating Confirmation pdf' );
 		pdf.send(req, res);
 	} else {
 		res.status(404);

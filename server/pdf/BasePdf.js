@@ -2,9 +2,19 @@ const PDFDocument = require('pdfkit');
 
 class BasePdf {
 
-	constructor( filename ) {
-		this.doc = new PDFDocument();
+	constructor( filename, args ) {
+		this.doc = new PDFDocument(args);
 		this.filename = filename || null;
+
+		const _assets = __dirname + '/../assets';
+		this.assets = {
+			font: (f) => _assets + '/fonts/' + f,
+			image: (f) => _assets + '/images/' + f
+		};
+	}
+
+	addFont( name, url, family ) {
+		this.doc.registerFont( name, url, family );
 	}
 
 	send(req, res) {
@@ -22,6 +32,18 @@ class BasePdf {
 	}
 
 	render() { }
+
+	tryRender( args ) {
+		try {
+			this.render(args);
+			return true;
+		}
+		catch( err ) {
+			this.doc.moveTo(0,0);
+			this.doc.text( err.toString() );
+			return false;
+		}
+	}
 }
 
 module.exports = BasePdf;
