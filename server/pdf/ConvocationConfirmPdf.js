@@ -1,5 +1,5 @@
-const { y } = require('pdfkit');
 let BasePdf = require('./BasePdf.js');
+const { formatDate } = require('../lib/formatters');
 
 const PAGE_SIZE = 'A4';
 const pt2cm = BasePdf.ptXcm(PAGE_SIZE);
@@ -25,10 +25,6 @@ class ConvocationConfirmPdf extends BasePdf {
 		this.addFont( 'Bookman Old Style-Bold', this.assets.font('BOOKOSB.TTF') );
 	}
 
-	formatDate(dt) {
-		return '02.09.2022';
-	}
-
 	page_footer( PO ) {
 		// const start_x = fbox_y + fbox_h + 5;
 		const doc = this.doc;
@@ -51,13 +47,53 @@ class ConvocationConfirmPdf extends BasePdf {
 
 	}
 
-	render( conv ) {
+	render( params ) {
+
+		// Info variabili
+		const conv = params.convocation || {};
+		const person = params.person || {};
+		const contacts = params.contacts || {};
+		const bucket = params.bucket || {};
+		const event = params.event || {};
+		const event_info = event.info || {};
+		const info_it = event_info.it || {};
+		const info_slo = event_info.slo || {};
+
+		const today = new Date();
+		const protocol_number = conv.protocol_number || '<mancante>';
+		const protocol_dt = today;
+		const person_fullname = (person.last_name + ' ' + person.first_name).toUpperCase();
+		const person_address = contacts.address || '';
+		const person_address_mun = [contacts.cap, contacts.municipality].join(' '); // '34011 Duino Aurisina/Devin Nabrežina';
+		const event_obj_it = event.title || '<mancante>'; //'Elezioni del 25 settembre 2022';
+		const event_obj_slo = event.title_slo || '<mancante>'; //'Volitve z dne 25. septembra 2022';
+		const sect_number = bucket.number || '<mancante>';
+		const sect_name = bucket.name || '<mancante>'; //'Scuola secondaria di I grado – Srednja šola';
+		const sect_address = bucket.address || '<mancante>'; // 'Aurisina /Nabrežina n. 16';
+		const appointment_dt_it = info_it.appointment_dt || '<mancante>'; // '16.00 di sabato, 24 settembre 2022';
+		const appointment_dt_slo = info_slo.appointment_dt || '<mancante>'; //'v soboto, 24.septembra 2022, ob 16. uri';
+		const event_range_it = info_it.range || '<mancante>'; //'dalle ore 7.00 alle ore 23.00 di domenica 25 settembre';
+		const event_range_slo = info_slo.range || '<mancante>'; //'v nedeljo, 25. septembra 2022, od 7. do 23. ure';
+		const signer = {
+			first_name: 'Nome (mancante)',
+			last_name: 'Cognome (mancante)',
+			title_it: "Titolo Responsabile (mancante)",
+			title_slo: 'Titolo Responsabile slo (mancante)',
+
+			...event.signer
+		};
+		// {
+		// 	first_name: 'Nataša',
+		// 	last_name: 'Canziani',
+		// 	sign: 'sign.png',
+		// 	title_it: "La Responsabile dell’Ufficio Elettorale",
+		// 	title_slo: 'Odgovorna za volilni urad'
+		// };
+		const municipality_stamp = 'stamp.png';
+		const PO = signer.first_name + ' ' + signer.last_name;
+
+
 		const doc = this.doc;
-
-		// const m = doc.page.margins;
-		// doc.rect(m.left, m.top, doc.page.width - m.left - m.right, doc.page.height - m.top - m.bottom)
-		// 	.stroke();
-
 		const _margins = doc.page.margins;
 		const _width = doc.page.width - _margins.left - _margins.right;
 
@@ -66,7 +102,7 @@ class ConvocationConfirmPdf extends BasePdf {
 		//
 		// - Logo - immagine
 		const logo = {
-			path: __dirname+'/../assets/images/logoCom.jpg',
+			path: this.assets.image('logoCom.jpg'),
 			w: cm(0.94),
 			h: cmY(1.38),
 			label: 'Comune di Duino Aurisina\nObčina Devin Nabrežina'
@@ -84,10 +120,10 @@ class ConvocationConfirmPdf extends BasePdf {
 		
 		// - N.Protocollo, numero documento, data e luogo
 		doc.font('LiberationSerif', 11);
-		const h_text_left = 'Prot. n. ' + (conv.protocol_number || 15601)
-			+ '\nVerbale n./Zapisnik št. '+(conv.doc_number || 26)+' dd./z dne ' + this.formatDate(conv.dt)
+		const h_text_left = 'Prot. n. ' + protocol_number
+			+ '\nVerbale n./Zapisnik št. '+(conv.doc_number || 26)+' dd./z dne ' + formatDate('DD/MM/YYYY', protocol_dt)
 		;
-		const h_text_right = 'Aurisina/Nabrežina, ' + this.formatDate(conv.dt);
+		const h_text_right = 'Aurisina/Nabrežina, ' + formatDate('DD.MM.YYYY', today);
 
 		// const h_top = doc.y; // cm(2)
 		const h_top = _margins.top + cmY(2);
@@ -101,9 +137,9 @@ class ConvocationConfirmPdf extends BasePdf {
 		//
 		const p_left = _margins.left + cm(8.1);
 		const p_top = _margins.top + cmY(3.5);
-		const p_text = (conv.last_name + ' ' + conv.first_name).toUpperCase()
-			+ '\n' + (conv.address || 'Aurisina stazione/Nabrežina postaja  n.5')
-			+ '\n34011 Duino Aurisina/Devin Nabrežina'
+		const p_text = person_fullname
+			+ '\n' + person_address
+			+ '\n' + person_address_mun
 			;
 		doc.font('LiberationSerif-Bold', 11);
 		doc.text( p_text, p_left, p_top, { align: 'left', width: _width/2 });
@@ -111,8 +147,8 @@ class ConvocationConfirmPdf extends BasePdf {
 		//
 		// OGGETTO
 		//
-		const obj_text = 'Elezioni del 25 settembre 2022 - Notifica nomina a scrutatore presso la sezione elettorale';
-		const obj_text_slo = 'Volitve z dne 25. septembra 2022 - Sporočilo o imenovanju za skrutinatorja na volišču';
+		const obj_text = event_obj_it + ' - Notifica nomina a scrutatore presso la sezione elettorale';
+		const obj_text_slo = event_obj_slo + ' - Sporočilo o imenovanju za skrutinatorja na volišču';
 		doc.font('LiberationSerif-Bold', 11);
 		const obj_start_y = _margins.top + cmY(5.2);
 		const obj_start_x = _margins.left + cm(3.1);
@@ -139,10 +175,9 @@ class ConvocationConfirmPdf extends BasePdf {
 		doc.text( site_label, _margins.left, site_rect.y + (site_rect.h - site_label_h)/2);
 		let site_text_offset = _margins.left + site_label_w + cm(1.5);
 		let site_text_w = _margins.left + _width - site_text_offset;
-		let site_text_number = 'N. – št. ' + '2';
-		let site_text_name = 'Scuola secondaria di I grado – Srednja šola';
-		let site_text_address = 'Aurisina /Nabrežina n. 16';
-		let site_text = site_text_number + '\n' + site_text_name + '\n' + site_text_address;
+		let site_text = 'N. – št. ' + sect_number
+			+ '\n' + sect_name
+			+ '\n' + sect_address;
 		doc.font('LiberationSerif-Bold', 10.5);
 		doc.text( site_text, site_text_offset, site_rect.y + cmY(0.2), { align: 'center', width: site_text_w });
 
@@ -150,14 +185,14 @@ class ConvocationConfirmPdf extends BasePdf {
 		// Informazioni
 		//
 		const text_it = "Le comunico che la Commissione elettorale comunale, a norma dell'art. 9 della Legge 21.12.2005, n. 270, ha deliberato di nominarLa scrutatore presso il seggio elettorale sopraindicato.\n"
-			+ "Pertanto la S.V. dovrà presentarsi alle ore 16.00 di sabato, 24 settembre 2022 presso la sezione elettorale sopraindicata per la costituzione dell’ufficio elettorale. Le operazioni di votazione si svolgeranno dalle ore 7.00 alle ore 23.00 di domenica 25 settembre.\n"
+			+ "Pertanto la S.V. dovrà presentarsi alle ore "+appointment_dt_it+" presso la sezione elettorale sopraindicata per la costituzione dell’ufficio elettorale. Le operazioni di votazione si svolgeranno "+event_range_it+".\n"
 			+ "Le operazioni di scrutinio si svolgeranno subito dopo la chiusura dei seggi.\n"
 			+ "L’incarico di scrutatore è obbligatorio per le persone designate, salvo eventuale grave impedimento all'assunzione dell'incarico che dovrà essere comunicato entro 48 ore dalla notifica della presente.\n"
 			+ "Si rammenta inoltre che gli scrutatori, nell’espletamento delle loro attività, devono attenersi scrupolosamente alle disposizioni di legge ed alle istruzioni ministeriali, collaborare attivamente con il presidente di seggio, curando con precisione e speditezza ogni adempimento ad essi demandato. Si richiama inoltre la particolare attenzione sulle responsabilità di natura penale in cui possono incorrere ai sensi degli articoli 94, 100, 103, 104, 108 e 111 del T.U. 30.03.1957, n. 361, anche in ragione della qualità di pubblico ufficiale ad essi attribuita dall’art. 40, comma 3 del T.U. citato.\n"
 			+ "Distinti saluti.";
 		const text_line = "* * * * * *";
 		const text_slo = "Sporočam Vam, da Vas je v smislu 9. člena zakona št. 270 z dne 21.12.2005 občinska volilna komisija imenovala za skrutinatorja na zgoraj navedenem sedežu.\n"
-			+ "Ob upoštevanju navedenega se morate udeležiti konstituiranja volilnega odbora, ki bo v soboto, 24.septembra 2022, ob 16. uri v prostorih zgoraj omenjenega volišča. Glasovanje bo potekalo v nedeljo, 25. septembra 2022, od 7. do 23. ure.\n"
+			+ "Ob upoštevanju navedenega se morate udeležiti konstituiranja volilnega odbora, ki bo "+appointment_dt_slo+" v prostorih zgoraj omenjenega volišča. Glasovanje bo potekalo "+event_range_slo+".\n"
 			+ "Izide glasovanja bo volilni odbor ugotavljal takoj po zaprtju volišča.\n"
 			+ "Skrutinatorsko delo je obvezno za vsakogar, ki je za to določen, razen v primeru resnih razlogov, ki jih je treba sporočiti v roku 48 ur od prejema tega obvestila.\n"
 			+ "Spominjamo Vas tudi, da se morajo skrutinatorji, pri opravljanju svoje dolžnosti, skrbno držati zakonskih določil ter ministrskih navodil, aktivno sodelovati s predsednikom volišča, tako da natančno in brez odlašanja izvršijo vsako nalogo, ki jim bo zaupana. Poleg tega Vas še posebej opozarjamo na kazensko odgovornost v smislu členov 94, 100, 103, 104, 108 in 111 E.B. št. 361 z dne 30.03.1957 ter v skladu s funkcijo javnega uradnika, ki jo skrutinatorjem dodeluje 3. odstavek 40. člena navedenega E.B.\n"
@@ -173,10 +208,9 @@ class ConvocationConfirmPdf extends BasePdf {
 		//
 		// Firmatario
 		//
-		const signer = { first_name: 'Nataša', last_name: 'Canziani'}
-		const signer_text = "La Responsabile dell’Ufficio Elettorale\n"
-			+ "Odgovorna za volilni urad\n"
-			+ signer.first_name + " " + signer.last_name.toUpperCase()
+		const signer_text = signer.title_it + "\n"
+			+ signer.title_slo + "\n"
+			+ signer.first_name + " " + (signer.last_name||"").toUpperCase()
 			;
 		// 8.25 - 15.5
 		// const signer_y = doc.y;
@@ -185,14 +219,16 @@ class ConvocationConfirmPdf extends BasePdf {
 		doc.text( signer_text, _margins.left+ cm(8.25), signer_y, { align: 'center', width: cm(15.5 - 8.25)});
 
 		// Firma
-		const sign_rect = {
-			x: _margins.left + cm(11),
-			// y: _margins.top + cmY(23.5),
-			y: doc.y - cmY(0.2),
-			w: cm(2.42), h: cmY(1.03)
+		if( signer.sign ) {
+			const sign_rect = {
+				x: _margins.left + cm(11),
+				// y: _margins.top + cmY(23.5),
+				y: doc.y - cmY(0.2),
+				w: cm(2.42), h: cmY(1.03)
+			}
+			doc.image( this.assets.image(signer.sign), sign_rect.x, sign_rect.y, { fit: [ sign_rect.w, sign_rect.h ]})
 		}
-		doc.image( this.assets.image('sign.png'), sign_rect.x, sign_rect.y, { fit: [ sign_rect.w, sign_rect.h ]})
-		
+
 		// Timbro
 		const stamp_rect = {
 			x: _margins.left + cm(15.20),
@@ -200,7 +236,7 @@ class ConvocationConfirmPdf extends BasePdf {
 			y: doc.y - cmY(0.5),
 			w: cm(1.6), h: cmY(1.58)
 		}
-		doc.image( this.assets.image('stamp.png'), stamp_rect.x, stamp_rect.y, { fit: [ stamp_rect.w, stamp_rect.h ]})
+		doc.image( this.assets.image(municipality_stamp), stamp_rect.x, stamp_rect.y, { fit: [ stamp_rect.w, stamp_rect.h ]})
 
 		//
 		// Box a piedipagina
@@ -231,7 +267,6 @@ class ConvocationConfirmPdf extends BasePdf {
 		//
 		// FOOTER
 		//
-		const PO = signer.first_name + ' ' + signer.last_name;
 		this.page_footer( PO );
 
 	}

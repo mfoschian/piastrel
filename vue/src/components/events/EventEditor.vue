@@ -2,11 +2,32 @@
 	<form @submit.prevent>
 		<div class="form-group">
 			<label>Nome</label>
-			<input type="text"
-				v-model="title"
-				:class="{'is-invalid': !valid_title}"
-				class="form-control"
-			/>
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text flag">
+						<img src="../../assets/flag-it.png">
+					</span>
+				</div>
+				<input type="text"
+					v-model="title"
+					:class="{'is-invalid': !valid_title}"
+					class="form-control"
+				/>
+			</div>
+		</div>
+		<div class="form-group">
+			<label>Nome (Slo)</label>
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text flag">
+						<img src="../../assets/flag-slo.png">
+					</span>
+				</div>
+				<input type="text"
+					v-model="title_slo"
+					class="form-control"
+				/>
+			</div>
 		</div>
 		<div class="form-group">
 			<label>Data</label>
@@ -44,6 +65,7 @@ export default {
 		let event = {
 			id: ref( props.event.id),
 			title: ref(props.event.title || ""),
+			title_slo: ref(props.event.title_slo || ""),
 			date: ref(props.event.date),
 			active: ref(!!props.event.active)
 		};
@@ -56,6 +78,7 @@ export default {
 		let changed = computed( () => {
 			if( props.event.id != event.id.value ) return true;
 			if( props.event.title != event.title.value ) return true;
+			if( props.event.title_slo != event.title_slo.value ) return true;
 			if( props.event.date != event.date.value ) return true;
 			if( props.event.active != event.active.value ) return true;
 			return false;
@@ -64,6 +87,7 @@ export default {
 		watchEffect(() => {
 			event.id.value = props.event.id;
 			event.title.value = props.event.title;
+			event.title_slo.value = props.event.title_slo;
 			event.date.value = props.event.date;
 			event.active.value = !!props.event.active;
 		});
@@ -72,8 +96,26 @@ export default {
 			let ev = {
 				id: event.id.value,
 				title: event.title.value,
+				title_slo: event.title_slo.value,
 				date: event.date.value,
-				active: event.active.value
+				active: event.active.value,
+				info: {
+					it: {
+						appointment_dt : '16.00 di sabato, 24 settembre 2022',
+						range: 'dalle ore 7.00 alle ore 23.00 di domenica 25 settembre'
+					},
+					slo: {
+						appointment_dt : 'v soboto, 24.septembra 2022, ob 16. uri',
+						range: 'v nedeljo, 25. septembra 2022, od 7. do 23. ure'
+					},
+					signer: {
+						first_name: 'Nome (mancante)',
+						last_name: 'Cognome (mancante)',
+						title_it: "Titolo Responsabile (mancante)",
+						title_slo: 'Titolo Responsabile slo (mancante)',
+						sign: 'image-asset-name'
+					}
+				}
 			};
 
 			context.emit('save', ev);		
@@ -95,3 +137,21 @@ export default {
 	}
 }
 </script>
+
+<style lang="scss">
+form {
+	.form-group {
+		.flag {
+			// margin-left: 1em;
+			border-top-right-radius: 0;
+			border-bottom-right-radius: 0;
+
+			img {
+				// vertical-align:text-bottom;
+				width: 1.5em;
+				height: 1.5em;
+			}
+		}
+	}
+}
+</style>

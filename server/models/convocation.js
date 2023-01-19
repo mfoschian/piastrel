@@ -15,7 +15,7 @@ class Convocation extends BaseModel {
 			.select(this.join_fields)
 			.from(this.table_name + ' as c')
 			.join('persons as p', 'p.id', 'c.person_id')
-			.then( results => results.map( r => this.map_fields(r) ) );
+			.then( results => results.map( r => this.db_to_model(r) ) );
 	}
 
 	static of_event(event_id) {
@@ -24,7 +24,7 @@ class Convocation extends BaseModel {
 			.select(this.join_fields).from(this.table_name + ' as c')
 			.join('persons as p', 'p.id', 'c.person_id')
 			.where( {'c.event_id': event_id })
-			.then( results => results.map( r => this.map_fields(r) ) )
+			.then( results => results.map( r => this.db_to_model(r) ) )
 			;
 		// console.log( s.toSQL() );
 	}
@@ -36,7 +36,7 @@ class Convocation extends BaseModel {
 			.where( { 'c.id': id } )
 			.then( results => {
 				if( results )
-					return this.map_fields(results[0]);
+					return this.db_to_model(results[0]);
 				else return null;
 			});
 	}

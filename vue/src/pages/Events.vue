@@ -87,8 +87,10 @@ export default {
 			let ev = {
 				id: e.id,
 				title: e.title,
+				title_slo: e.title_slo,
 				date: e.date,
-				active: e.active
+				active: e.active,
+				info: e.info
 			};
 			// debugger
 			_edited_item.value = ev;

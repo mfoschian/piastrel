@@ -1,4 +1,8 @@
 const express = require('express');
+const Contact = require('../models/contact.js');
+const Event = require('../models/event.js');
+const Bucket = require('../models/bucket.js');
+const Person = require('../models/person.js');
 let router = express.Router();
 
 let Convocation = require('../models/convocation.js');
@@ -27,17 +31,53 @@ router.get('/:id', async function (req, res) {
 });
 
 router.get('/:id/confirmation.pdf', async function (req, res) {
-	let item = await Convocation.get(req.params.id);
-	if (item != null) {
-		let filename = 'convoc_' + item.code + '.pdf';
-		let pdf = new ConvConfirmPdf(filename);
-		let ok = pdf.tryRender(item);
-		if(!ok) console.error( 'ERROR creating Confirmation pdf' );
-		pdf.send(req, res);
-	} else {
+	let conv = await Convocation.get(req.params.id);
+	if (conv == null) {
 		res.status(404);
 		res.json({ message: "Not Found" });
+		return;
 	}
+
+	let bucket = await Bucket.get(conv.bucket_id);
+	if (bucket == null) {
+		res.status(404);
+		res.json({ message: "Not Found" });
+		return;
+	}
+
+	let event = await Event.get(conv.event_id);
+	if (event == null) {
+		res.status(404);
+		res.json({ message: "Not Found" });
+		return;
+	}
+
+	let person = await Person.get(conv.person_id);
+	if (person == null) {
+		res.status(404);
+		res.json({ message: "Not Found" });
+		return;
+	}
+
+	let cts = await Contact.of(person.id);
+	let contacts = {};
+	for(let i=0; i<cts.length; i++) {
+		let c = cts[i];
+		contacts[ c.type ] = c.value;
+	}
+
+	let params = {
+		convocation: conv,
+		person,
+		contacts,
+		bucket,
+		event
+	};
+	let filename = 'convoc_' + conv.code + '.pdf';
+	let pdf = new ConvConfirmPdf(filename);
+	let ok = pdf.tryRender(params);
+	if(!ok) console.error( 'ERROR creating Confirmation pdf' );
+	pdf.send(req, res);
 });
 
 router.post('/', async function (req, res) {

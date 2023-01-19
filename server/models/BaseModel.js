@@ -6,7 +6,11 @@ class BaseModel {
 	static upd_fields = [];
 	static ups_fields = ['id'];
 
-	static map_fields( record ) {
+	static model_to_db(record) {
+		return record;
+	}
+
+	static db_to_model( record ) {
 		return record;
 	}
 
@@ -31,14 +35,14 @@ class BaseModel {
 	static all() {
 		// console.log('Selecting all from %s', this.table_name);
 		return DB.me().select().from(this.table_name)
-		.then( results => results.map( r => this.map_fields(r) ) );
+		.then( results => results.map( r => this.db_to_model(r) ) );
 	}
 
 	static get(id) {
 		return DB.me().select().from(this.table_name).where( { id: id } )
 		.then( results => {
 			if( results )
-				return this.map_fields(results[0]);
+				return this.db_to_model(results[0]);
 			else return null;
 		});
 	}
@@ -48,7 +52,7 @@ class BaseModel {
 	}
 	
 	static create(p) {
-		return DB.me()(this.table_name).insert( p )
+		return DB.me()(this.table_name).insert( this.model_to_db(p) )
 			.then( res => {
 				if( Array.isArray(res) ) {
 					let id = res[0];
@@ -69,13 +73,17 @@ class BaseModel {
 		if( Object.keys(values).length == 0 ) {
 			return this.get(id);
 		}
-		// values = this.map_fields(values);
+		// values = this.db_to_model(values);
 
-		return DB.me()(this.table_name).where({ id: id || p.id }).update( values );
+		return DB.me()(this.table_name).where({ id: id || p.id }).update( this.model_to_db(values) )
+		.then( r => {
+			console.log(r);
+		})
+		;
 	}
 
 	static upsert(p) {
-		return DB.upsert( this.table_name, p, this.ups_fields );
+		return DB.upsert( this.table_name, this.model_to_db(p), this.ups_fields );
 	}
 }
 

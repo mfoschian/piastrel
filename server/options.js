@@ -3,6 +3,7 @@ module.exports = {
 		client: 'sqlite3',
 		connection: {
 			filename: './server/dev.sqlite3'
-		}	
+		},
+		useNullAsDefault: true	
 	}
 }

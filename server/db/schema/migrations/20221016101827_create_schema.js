@@ -28,8 +28,10 @@ exports.up = async function(knex) {
 
 		table.increments('id');
 		table.string('title').notNullable().index();
+		table.string('title_slo');
 		table.date('date').index();
 		table.boolean('active').defaultTo(true).index();
+		table.json('info');
 	});
 
 	await knex.schema.createTable('buckets', function(table) {
