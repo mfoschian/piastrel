@@ -1,6 +1,28 @@
 const PDFDocument = require('pdfkit');
 
+const SIZES = {
+	'A3': { inc: { x: 11.7, y: 16.5 }, cm: { x: 29.7, y: 42 } },
+	'A4': { inc: { x: 8.3, y: 11.7 }, cm: { x: 21, y: 29.7 } },
+	'LETTER': { inc: { x: 8.5, y: 11 }, cm: { x: 21.6, y: 27.95 } }
+};
+const PT_X_INC = 72;
+
+
 class BasePdf {
+
+	static ptXcm( pageSize ) {
+		const def_size = 'LETTER';
+		let size = SIZES[(pageSize||def_size).toUpperCase()];
+		if( !size ) size = SIZES[def_size];
+
+		let inc = size.inc;
+		let cm = size.cm;
+
+		return {
+			x: PT_X_INC * inc.x / cm.x,
+			y: PT_X_INC * inc.y / cm.y
+		};
+	}
 
 	constructor( filename, args ) {
 		this.doc = new PDFDocument(args);

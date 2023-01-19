@@ -1,22 +1,22 @@
 const { y } = require('pdfkit');
 let BasePdf = require('./BasePdf.js');
 
-
+const PAGE_SIZE = 'A4';
+const pt2cm = BasePdf.ptXcm(PAGE_SIZE);
 function cm(x) {
-	// Unita di misura in PDF dot : 72 dot per inch ovvero 612 P per 21 cm
-	// Vale per A4
-	return x * 612.0 / 21.0;
+	return x * pt2cm.x;
 }
-
-const _page = {
-	// margins: { top: cm(1.25), right: cm(1.8), bottom: cm(2.3), left: cm(1.8) }
-	margins: { top: cm(1.25), right: cm(1.8), bottom: 0, left: cm(1.8) }
-};
+function cmY(x) {
+	return x * pt2cm.y;
+}
 
 class ConvocationConfirmPdf extends BasePdf {
 
 	constructor(filename) {
-		super(filename, { margins: _page.margins } );
+		super(filename, {
+			size: PAGE_SIZE,
+			margins: { top: cmY(1.25), right: cm(1.8), bottom: 0, left: cm(1.8) } // bottom 2.3
+		});
 		this.addFont( 'LiberationSerif-Bold', this.assets.font('LiberationSerif-Bold.ttf') );
 		this.addFont( 'LiberationSerif-BoldItalic', this.assets.font('LiberationSerif-BoldItalic.ttf') );
 		this.addFont( 'LiberationSerif-Italic', this.assets.font('LiberationSerif-Italic.ttf') );
@@ -29,6 +29,28 @@ class ConvocationConfirmPdf extends BasePdf {
 		return '02.09.2022';
 	}
 
+	page_footer( PO ) {
+		// const start_x = fbox_y + fbox_h + 5;
+		const doc = this.doc;
+		const start_y = doc.page.height - cmY(2.3);
+		const _margins = doc.page.margins;
+		const _width = doc.page.width - _margins.left - _margins.right;
+
+
+		const footer_text = "Area Amministrativa, Demografici e Ufficio gare\n"
+			+ "Oddelek za administrativne in demografske zadeve ter urad za javna naročila";
+		const footer_text_2 = "Responsabile di P.O. – Odgovorni za O.P.: "+PO+"\n"
+			+ "Aurisina Cave-Nabrežina kamnolomi, 25  - 34011 Duino Aurisina–Devin Nabrežina (TS)  \n"
+			+ "Tel.: 040–2017400-430  Web: www.comune.duino-aurisina.ts.it e-mail: elettorale@comune.duino-aurisina.ts.it"
+		;
+
+		doc.font('Bookman Old Style-Bold', 7);
+		doc.text(footer_text, _margins.left, start_y, { align: 'center', width: _width });
+		doc.font('Bookman Old Style', 7);
+		doc.text(footer_text_2, _margins.left, doc.y, { align: 'center', width: _width });
+
+	}
+
 	render( conv ) {
 		const doc = this.doc;
 
@@ -37,8 +59,7 @@ class ConvocationConfirmPdf extends BasePdf {
 		// 	.stroke();
 
 		const _margins = doc.page.margins;
-		const _page_w = doc.page.width;
-		const _width = _page_w - _margins.left - _margins.right;
+		const _width = doc.page.width - _margins.left - _margins.right;
 
 		//
 		// Intestazione
@@ -47,12 +68,12 @@ class ConvocationConfirmPdf extends BasePdf {
 		const logo = {
 			path: __dirname+'/../assets/images/logoCom.jpg',
 			w: cm(0.94),
-			h: cm(1.38),
+			h: cmY(1.38),
 			label: 'Comune di Duino Aurisina\nObčina Devin Nabrežina'
 		};
 		const logo_rect = {
-			x: _page_w/2 - logo.w/2,
-			y: _margins.top - cm(0.7),
+			x: doc.page.width/2 - logo.w/2,
+			y: _margins.top - cmY(0.7),
 			w: logo.w,
 			h: logo.h
 		}
@@ -69,7 +90,7 @@ class ConvocationConfirmPdf extends BasePdf {
 		const h_text_right = 'Aurisina/Nabrežina, ' + this.formatDate(conv.dt);
 
 		// const h_top = doc.y; // cm(2)
-		const h_top = _margins.top + cm(2);
+		const h_top = _margins.top + cmY(2);
 		doc.text( h_text_left, _margins.left, h_top, { align: 'left', width: _width/2 } );
 		doc.text( h_text_right, doc.page.width/2, h_top, { align: 'right', width: _width/2 } );
 		// Lascia una riga
@@ -79,7 +100,7 @@ class ConvocationConfirmPdf extends BasePdf {
 		// Generalità persona convocata
 		//
 		const p_left = _margins.left + cm(8.1);
-		const p_top = _margins.top + cm(3.5);
+		const p_top = _margins.top + cmY(3.5);
 		const p_text = (conv.last_name + ' ' + conv.first_name).toUpperCase()
 			+ '\n' + (conv.address || 'Aurisina stazione/Nabrežina postaja  n.5')
 			+ '\n34011 Duino Aurisina/Devin Nabrežina'
@@ -93,7 +114,7 @@ class ConvocationConfirmPdf extends BasePdf {
 		const obj_text = 'Elezioni del 25 settembre 2022 - Notifica nomina a scrutatore presso la sezione elettorale';
 		const obj_text_slo = 'Volitve z dne 25. septembra 2022 - Sporočilo o imenovanju za skrutinatorja na volišču';
 		doc.font('LiberationSerif-Bold', 11);
-		const obj_start_y = _margins.top + cm(5.2);
+		const obj_start_y = _margins.top + cmY(5.2);
 		const obj_start_x = _margins.left + cm(3.1);
 		doc.text( 'OGGETTO:', _margins.left, obj_start_y, { align: 'left', underline: true });
 		doc.text( 'ZADEVA:', _margins.left, doc.y, { align: 'left', underline: true });
@@ -106,9 +127,9 @@ class ConvocationConfirmPdf extends BasePdf {
 		//
 		const site_rect = {
 			x: _margins.left - cm(0.2),
-			y: _margins.top + cm(6.5),
+			y: _margins.top + cmY(6.5),
 			w: _width + 2 * cm(0.2),
-			h: cm(1.8)
+			h: cmY(1.8)
 		};
 		doc.rect( site_rect.x, site_rect.y, site_rect.w, site_rect.h ).stroke();
 		const site_label = 'Luogo della riunione/Kraj zbora:';
@@ -123,7 +144,7 @@ class ConvocationConfirmPdf extends BasePdf {
 		let site_text_address = 'Aurisina /Nabrežina n. 16';
 		let site_text = site_text_number + '\n' + site_text_name + '\n' + site_text_address;
 		doc.font('LiberationSerif-Bold', 10.5);
-		doc.text( site_text, site_text_offset, site_rect.y + cm(0.2), { align: 'center', width: site_text_w });
+		doc.text( site_text, site_text_offset, site_rect.y + cmY(0.2), { align: 'center', width: site_text_w });
 
 		//
 		// Informazioni
@@ -142,9 +163,9 @@ class ConvocationConfirmPdf extends BasePdf {
 			+ "Spominjamo Vas tudi, da se morajo skrutinatorji, pri opravljanju svoje dolžnosti, skrbno držati zakonskih določil ter ministrskih navodil, aktivno sodelovati s predsednikom volišča, tako da natančno in brez odlašanja izvršijo vsako nalogo, ki jim bo zaupana. Poleg tega Vas še posebej opozarjamo na kazensko odgovornost v smislu členov 94, 100, 103, 104, 108 in 111 E.B. št. 361 z dne 30.03.1957 ter v skladu s funkcijo javnega uradnika, ki jo skrutinatorjem dodeluje 3. odstavek 40. člena navedenega E.B.\n"
 			+ "Lep pozdrav.\n";
 
-		const text_style = { align: 'justify', indent: cm(1.75), lineGap: -1 };
+		const text_style = { align: 'justify', indent: cm(1.75), lineGap: 0 };
 		doc.font('LiberationSerif', 10.5);
-		doc.text( text_it, _margins.left, _margins.top + cm(9), text_style );
+		doc.text( text_it, _margins.left, _margins.top + cmY(9), text_style );
 		doc.text( text_line, _margins.left, doc.y, {align: 'center'} );
 		doc.text( text_slo, _margins.left, doc.y, text_style );
 		
@@ -158,33 +179,35 @@ class ConvocationConfirmPdf extends BasePdf {
 			+ signer.first_name + " " + signer.last_name.toUpperCase()
 			;
 		// 8.25 - 15.5
-		const signer_y = doc.y; // _margins.top + cm(22.5)
+		// const signer_y = doc.y;
+		const signer_y = _margins.top + cmY(22.5)
 		doc.font('LiberationSerif', 10);
 		doc.text( signer_text, _margins.left+ cm(8.25), signer_y, { align: 'center', width: cm(15.5 - 8.25)});
 
 		// Firma
 		const sign_rect = {
 			x: _margins.left + cm(11),
-			// y: _margins.top + cm(23.5),
-			y: doc.y - cm(0.2),
-			w: cm(2.42), h: cm(1.03)
+			// y: _margins.top + cmY(23.5),
+			y: doc.y - cmY(0.2),
+			w: cm(2.42), h: cmY(1.03)
 		}
 		doc.image( this.assets.image('sign.png'), sign_rect.x, sign_rect.y, { fit: [ sign_rect.w, sign_rect.h ]})
 		
 		// Timbro
 		const stamp_rect = {
 			x: _margins.left + cm(15.20),
-			// y: _margins.top + cm(23.5),
-			y: doc.y - cm(0.5),
-			w: cm(1.6), h: cm(1.58)
+			// y: _margins.top + cmY(23.5),
+			y: doc.y - cmY(0.5),
+			w: cm(1.6), h: cmY(1.58)
 		}
 		doc.image( this.assets.image('stamp.png'), stamp_rect.x, stamp_rect.y, { fit: [ stamp_rect.w, stamp_rect.h ]})
 
 		//
 		// Box a piedipagina
 		//
-		const fbox_h = cm(1.25);
-		const fbox_y = cm(23.5);
+		// const fbox_y = cmY(23.5);
+		const fbox_y = signer_y + cmY(2);
+		const fbox_h = cmY(1.25);
 		const draw_box = ( start, w, text ) => {
 			doc.rect( start, fbox_y, w, fbox_h ).lineWidth(0.75).stroke();
 			// line
@@ -205,22 +228,12 @@ class ConvocationConfirmPdf extends BasePdf {
 		bx_x += bx_w;
 		draw_box( bx_x, bx_w, 'Tel.');
 
-
 		//
-		// Footer
+		// FOOTER
 		//
 		const PO = signer.first_name + ' ' + signer.last_name;
-		const footer_text = "Area Amministrativa, Demografici e Ufficio gare\n"
-			+ "Oddelek za administrativne in demografske zadeve ter urad za javna naročila";
-		const footer_text_2 = "Responsabile di P.O. – Odgovorni za O.P.: "+PO+"\n"
-			+ "Aurisina Cave-Nabrežina kamnolomi, 25  - 34011 Duino Aurisina–Devin Nabrežina (TS)  \n"
-			+ "Tel.: 040–2017400-430  Web: www.comune.duino-aurisina.ts.it e-mail: elettorale@comune.duino-aurisina.ts.it"
-		;
+		this.page_footer( PO );
 
-		doc.font('Bookman Old Style-Bold', 7);
-		doc.text(footer_text, _margins.left, fbox_y + fbox_h + 5, { align: 'center', width: _width });
-		doc.font('Bookman Old Style', 7);
-		doc.text(footer_text_2, _margins.left, doc.y, { align: 'center', width: _width });
 	}
 
 }
