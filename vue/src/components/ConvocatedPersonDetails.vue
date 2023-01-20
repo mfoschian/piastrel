@@ -114,7 +114,11 @@ export default {
 		let bucket_id = ref(null);
 		let bucket_name = computed( () => {
 			let b = Bucket.get(bucket_id.value) || {};
-			return b.name || "Nessuna";
+			if( !b ) return 'Nessuna';
+			let s = 'N. ' + b.number + ' - ' + b.name;
+			if( b.name_slo )
+				s += '/' + b.name_slo;
+			return s;
 		});
 
 		let contacts = ref([]);
@@ -123,7 +127,6 @@ export default {
 			status.value = props.item.status;
 			bucket_id.value = props.item.bucket_id;
 			contacts.value = await Person.contactsOf(props.item.person_id);
-			console.table(contacts.value);
 		});
 
 		let save_enabled = ref(false);
