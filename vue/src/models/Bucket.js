@@ -27,7 +27,9 @@ export const Bucket = {
 			id: null,
 			name: '',
 			number: '',
-			address: null
+			address: null,
+			name_slo: '',
+			address_slo: null
 		}
 	},
 

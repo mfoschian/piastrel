@@ -1,5 +1,6 @@
 let BasePdf = require('./BasePdf.js');
 const { formatDate } = require('../lib/formatters');
+const { joinIfNotEmpty } = require('../lib/utils');
 
 const PAGE_SIZE = 'A4';
 const pt2cm = BasePdf.ptXcm(PAGE_SIZE);
@@ -64,12 +65,12 @@ class ConvocationConfirmPdf extends BasePdf {
 		const protocol_dt = today;
 		const person_fullname = (person.last_name + ' ' + person.first_name).toUpperCase();
 		const person_address = contacts.address || '';
-		const person_address_mun = [contacts.cap, contacts.municipality].join(' '); // '34011 Duino Aurisina/Devin Nabrežina';
+		const person_address_mun = joinIfNotEmpty(contacts.cap, contacts.municipality); // '34011 Duino Aurisina/Devin Nabrežina';
 		const event_obj_it = event.title || '<mancante>'; //'Elezioni del 25 settembre 2022';
 		const event_obj_slo = event.title_slo || '<mancante>'; //'Volitve z dne 25. septembra 2022';
 		const sect_number = bucket.number || '<mancante>';
-		const sect_name = bucket.name || '<mancante>'; //'Scuola secondaria di I grado – Srednja šola';
-		const sect_address = bucket.address || '<mancante>'; // 'Aurisina /Nabrežina n. 16';
+		const sect_name = joinIfNotEmpty(bucket.name || '<mancante>', bucket.name_slo, ' - '); //'Scuola secondaria di I grado – Srednja šola';
+		const sect_address = joinIfNotEmpty(bucket.address || '<mancante>', bucket.address_slo, ' / '); // 'Aurisina /Nabrežina n. 16';
 		const appointment_dt_it = info_it.appointment_dt || '<mancante>'; // '16.00 di sabato, 24 settembre 2022';
 		const appointment_dt_slo = info_slo.appointment_dt || '<mancante>'; //'v soboto, 24.septembra 2022, ob 16. uri';
 		const event_range_it = info_it.range || '<mancante>'; //'dalle ore 7.00 alle ore 23.00 di domenica 25 settembre';

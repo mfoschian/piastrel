@@ -2,6 +2,17 @@
 form {
 	.form-group {
 		margin-bottom: 0.5rem;
+		.flag {
+			// margin-left: 1em;
+			border-top-right-radius: 0;
+			border-bottom-right-radius: 0;
+
+			img {
+				// vertical-align:text-bottom;
+				width: 1.5em;
+				height: 1.5em;
+			}
+		}
 	}
 
 	.buttons {

@@ -4,7 +4,15 @@
 			@dragover="dropcheck"
 			@drop="dropped($event, b.id)"
 		>
-			<div class="title" :title="b.address">N.{{ b.number }} - {{  b.name }}</div>
+			<div class="title" :title="b.address">
+				<div class="bnumber">N. {{ b.number }}</div>
+				<div>
+					{{  b.name }}
+					<template v-if="b.name_slo">
+						<br><span class="sloname">{{  b.name_slo }}</span>
+					</template>
+				</div>
+			</div>
 			<div class="body">
 				<ConvocatedPersonBox  v-for="c in assigned_to(b.id)" :key="c.id"
 					:item="c" 
@@ -22,6 +30,7 @@ import { Convocation } from '../models/Convocation'
 
 import ConvocatedPersonBox from './ConvocatedPersonBox.vue'
 import { dropcheck, dropped } from './ConvocatedPersonBox.vue'
+import { startNumber } from '../libs/utils'
 
 import { computed } from 'vue'
 
@@ -36,14 +45,6 @@ export default {
 
 		const sorted_buckets = computed( () => {
 			let b = buckets.value.concat([]);
-			let rgx = /([0-9]+).*/;
-			const startNumber= (s) => {
-				let n = Number(s);
-				if( !isNaN(n) ) return n;
-				let m = s.match(rgx);
-				if(!m) return NaN;
-				return Number(m[1]);
-			};
 			const sort_cmp = (a,b) => a > b ? 1 : a < b ? -1 : 0;
 
 			let res = b.sort( (b1,b2) => {
@@ -98,6 +99,20 @@ export default {
 			border-bottom: 1px solid var(--fourth-col);
 			padding-bottom: 0.35rem;
 			padding-left: 0.35rem;
+			display: flex;
+			flex-direction: row;
+			gap: 0.5rem;
+			align-items: center;
+
+			.bnumber {
+				font-weight: bold;
+				padding-right: 0.5rem;
+				border-right: 1px solid var(--fourth-col);
+			}
+
+			.sloname {
+				font-style: italic;
+			}
 		}
 	}
 }

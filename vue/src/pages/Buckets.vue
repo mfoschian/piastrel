@@ -23,8 +23,8 @@
 			</div>
 			<div v-for="e in items" :key="e.id" class="row">
 				<div class="col">{{e.number}}</div>
-				<div class="col">{{e.name}}</div>
-				<div class="col">{{e.address}}</div>
+				<div class="col">{{e.name}}<template v-if="!isEmpty(e.name_slo)"><br><i>{{ e.name_slo }}</i></template></div>
+				<div class="col">{{e.address}}<template v-if="!isEmpty(e.address_slo)"><br><i>{{ e.address_slo }}</i></template></div>
 				<div class="col actions-3">
 					<span class="btn bi-pencil" @click="edit(e)"></span>
 					<span class="btn bi-back" @click="clone(e)"></span>
@@ -59,6 +59,7 @@ import { ref, computed } from 'vue'
 import BasePage from './BasePage.vue'
 import BucketEditor from '../components/buckets/BucketEditor.vue'
 import { Bucket } from '../models/Bucket'
+import { isEmpty, startNumber } from '../libs/utils'
 
 
 export default {
@@ -87,7 +88,9 @@ export default {
 				id: e.id,
 				number: e.number,
 				name: e.name,
-				address: e.address
+				address: e.address,
+				name_slo: e.name_slo,
+				address_slo: e.address_slo
 			};
 			// debugger
 			_edited_item.value = ev;
@@ -95,13 +98,15 @@ export default {
 		};
 
 		const clone = (e) => {
-			// let n = Number(e.number);
+			let n = startNumber(e.number);
 			let ev = {
 				id: null,
-				// number: isNaN(n) ? e.number : n+1,
-				number: e.number,
+				number: isNaN(n) ? e.number : n+1,
+				// number: e.number,
 				name: e.name,
-				address: e.address
+				address: e.address,
+				name_slo: e.name_slo,
+				address_slo: e.address_slo
 			};
 			// debugger
 			_edited_item.value = ev;
@@ -143,6 +148,7 @@ export default {
 			newBucket,
 			cancel,
 			edit, save, remove, clone,
+			isEmpty,
 			page_error,
 			dlgVisible,
 			edited_item: _edited_item,

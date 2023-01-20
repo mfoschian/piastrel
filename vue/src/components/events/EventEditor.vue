@@ -54,7 +54,7 @@
 <script>
 import { computed } from '@vue/reactivity';
 import { ref, watchEffect } from 'vue'
-import { empty } from '../../libs/utils'
+import { isEmpty } from '../../libs/utils'
 
 export default {
 	props: {
@@ -70,10 +70,11 @@ export default {
 			active: ref(!!props.event.active)
 		};
 
-		let valid_title = computed( () => !empty(event.title.value) );
-		let valid_date = computed( () => !empty(event.date.value) );
+		let valid_title = computed( () => !isEmpty(event.title.value) );
+		let valid_date = computed( () => !isEmpty(event.date.value) );
 		let valid = computed( () => valid_title.value && valid_date.value );
-		let save_enabled = computed( () => valid.value && changed.value  );
+		let is_new_record = computed( () => event.id.value == null );
+		let save_enabled = computed( () => valid.value && (changed.value || is_new_record.value)  );
 
 		let changed = computed( () => {
 			if( props.event.id != event.id.value ) return true;
@@ -137,21 +138,3 @@ export default {
 	}
 }
 </script>
-
-<style lang="scss">
-form {
-	.form-group {
-		.flag {
-			// margin-left: 1em;
-			border-top-right-radius: 0;
-			border-bottom-right-radius: 0;
-
-			img {
-				// vertical-align:text-bottom;
-				width: 1.5em;
-				height: 1.5em;
-			}
-		}
-	}
-}
-</style>

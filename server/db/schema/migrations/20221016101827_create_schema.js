@@ -39,7 +39,9 @@ exports.up = async function(knex) {
 		table.increments('id');
 		table.string('number', 16).notNullable().index();
 		table.string('name').notNullable().index();
+		table.string('name_slo');
 		table.text('address');
+		table.text('address_slo');
 		table.string('inferred_status', 20).nullable();
 	});
 
