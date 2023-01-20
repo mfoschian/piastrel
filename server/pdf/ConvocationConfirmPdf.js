@@ -61,8 +61,8 @@ class ConvocationConfirmPdf extends BasePdf {
 		const info_slo = event_info.slo || {};
 
 		const today = new Date();
-		const protocol_number = conv.protocol_number || '<mancante>';
-		const protocol_dt = today;
+		const protocol_number = conv.doc_number || '<mancante>';
+		const protocol_dt = conv.doc_dt || today;
 		const person_fullname = (person.last_name + ' ' + person.first_name).toUpperCase();
 		const person_address = contacts.address || '';
 		const person_address_mun = joinIfNotEmpty(contacts.cap||'', contacts.municipality||'', ' - '); // '34011 Duino Aurisina/Devin Nabrežina';

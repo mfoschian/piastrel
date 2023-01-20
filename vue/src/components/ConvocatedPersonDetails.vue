@@ -62,6 +62,16 @@
 		<div class="form-group row">
 			<label class="col-sm-4 col-form-label">Documento Conferma Scrutatore</label>
 			<div class="col-sm-8">
+				<input type="text" class="form-control"
+					placeholder="protocollo"
+					:disabled="read_only"
+					v-model="doc_number"
+				>				
+				<input type="date" class="form-control"
+					placeholder="data doc"
+					:disabled="read_only"
+					v-model="doc_dt" 
+				>
 				<button class="btn btn-success pdf-btn" @click="getPdf"><span class="bi bi-filetype-pdf"></span></button>
 				<!-- <span class="bi bi-file-pdf"></span> -->
 			</div>
@@ -108,7 +118,7 @@ export default {
 		item: { type: Object, required: true },
 		read_only: { type: Boolean, default: false },
 	},
-	emits: ['cancel', 'saveStatus' ],
+	emits: ['cancel', 'saveConvocation' ],
 	setup(props, context) {
 
 		let status = ref(props.item.status);
@@ -121,6 +131,13 @@ export default {
 				s += '/' + b.name_slo;
 			return s;
 		});
+
+		let doc_number = ref(null);
+		let doc_dt = ref(null);
+		const doc_changed = computed( () => doc_number.value != props.item.doc_number
+			|| doc_dt.value != props.item.doc_dt
+		);
+
 
 		let contacts = ref([]);
 		const getContactValue = (cts ,type) => {
@@ -149,6 +166,8 @@ export default {
 		watchEffect( async () => {
 			status.value = props.item.status;
 			bucket_id.value = props.item.bucket_id;
+			doc_number.value = props.item.doc_number;
+			doc_dt.value = props.item.doc_dt;
 			let cts = await Person.contactsOf(props.item.person_id);
 			for( let i=0; i<knownContacts.length; i++) {
 				let k = knownContacts[i];
@@ -157,18 +176,14 @@ export default {
 			contacts.value = cts;
 		});
 
-		// let save_enabled = ref(false);
-		// const changeStatus = () => {
-		// 	save_enabled.value = (props.item.status!= status.value || contact_changed.value == true);
-		// 	console.log('status: %s -> %s', props.item.status, status.value);
-		// };
+
 		let status_changed = computed( () => props.item.status != status.value );
 		let save_enabled = computed( () => {
-			return (status_changed.value == true || contact_changed.value == true);
+			return (status_changed.value == true || contact_changed.value == true || doc_changed.value == true);
 		});
 
 		const save = async () => {
-			if( props.read_only )
+			if( props.read_only || save_enabled.value != true )
 				return;
 
 			// Save contacts changes
@@ -215,8 +230,16 @@ export default {
 				}
 			}
 
-			if( status_changed.value == true )
-				context.emit('saveStatus', status.value);
+			let c = {};
+			
+			if( status_changed.value == true ) {
+				c.status = status.value;
+			}
+			if( doc_changed.value == true ) {
+				c.doc_dt = doc_dt.value;
+				c.doc_number = doc_number.value;
+			}
+			context.emit('saveConvocation', c);
 		};
 
 		const cancel = () => {
@@ -230,6 +253,11 @@ export default {
 		};
 
 		const getPdf = () => {
+			if( bucket_id.value == null ) {
+				alert( 'La persona non è assegnata a nessuna sezione');
+				return;
+			}
+			
 			let url = Convocation.confirmPdfUrl(props.item.id);
 			window.open(url,'_blank');
 		};
@@ -251,13 +279,10 @@ export default {
 			bucket_name,
 			contacts,
 			...contactsH, contact_changed,
-			// changeStatus,
+			doc_dt, doc_number,
 			save_enabled,
 			save, cancel,
 			getPdf,
-			// updateContact,
-			// addNewContact,
-			// deleteContact
 		};
 	}
 }

@@ -5,10 +5,26 @@ class Convocation extends BaseModel {
 
 
 	static table_name = 'convocations';
-	static upd_fields = ['person_id','event_id','bucket_id','status','note'];
+	static upd_fields = ['person_id','event_id','bucket_id','status','note','doc_dt','doc_number'];
 	static ups_fields = ['id'].concat(this.upd_fields);
 
 	static join_fields = ['c.*','p.last_name as last_name', 'p.first_name as first_name', 'p.code as code', 'p.note as note'];
+
+	// static model_to_db(record) {
+	// 	return record;
+	// }
+
+	static db_to_model(record) {
+		if (!record) return null;
+
+		if (record['doc_dt']) {
+			record['doc_dt'] = this.parse_dt(record['doc_dt']);
+		}
+
+		return record;
+	}
+
+
 	static all() {
 		// console.log('Selecting all from %s', this.table_name);
 		return this.db()

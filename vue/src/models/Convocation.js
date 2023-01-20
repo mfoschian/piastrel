@@ -1,4 +1,5 @@
 import Server from '../Server'
+import { dateValue } from '../libs/formatters'
 import { computed, ref } from 'vue'
 
 let _items = ref([]);
@@ -11,6 +12,12 @@ const Status = {
 	confirmed: 'confirmed'
 };
 
+function adjustRecord( r ) {
+	if( r )
+		r.doc_dt = dateValue(r.doc_dt);
+	return r;
+}
+
 export const Convocation = {
 	status: Status,
 
@@ -22,7 +29,7 @@ export const Convocation = {
 
 		let result = await Server.get(url);
 		if( result && result.items )
-			_items.value = result.items;
+			_items.value = result.items.map( r => adjustRecord(r) );
 		else
 			_items.value = [];
 	},
@@ -69,7 +76,10 @@ export const Convocation = {
 			id: null,
 			person_id: null,
 			bucket_id: null,
-			status: Status.unknown
+			status: Status.unknown,
+			note: null,
+			doc_dt: null,
+			doc_number: null
 		}
 	},
 
@@ -84,6 +94,7 @@ export const Convocation = {
 		}
 		else {
 			let res = await Server.update('/convocations/' + c.id, c );
+			res = adjustRecord(res);
 
 			let items = _items.value;
 			for( let i=0; i<items.length; i++ ) {

@@ -31,7 +31,7 @@
 					<div class="modal-body">
 						<ConvocatedPersonDetails :item="convocation"
 							@cancel="detailsVisible=false"
-							@saveStatus="saveStatus"
+							@saveConvocation="saveConvocation"
 							:read_only="read_only"
 						/>
 					</div>
@@ -95,11 +95,13 @@ export default {
 			detailsVisible.value = true;
 		};
 
-		const saveStatus = async (new_status) => {
+		const saveConvocation = async (x) => {
 			let c = convocation.value;
 			let upd = {
 				id: c.id,
-				status: new_status
+				status: x.status,
+				doc_dt: x.doc_dt,
+				doc_number: x.doc_number
 			}
 			let res = await Convocation.save(upd);
 			detailsVisible.value = false;
@@ -131,7 +133,7 @@ export default {
 			detailsVisible,
 			convocation,
 			openDetails,
-			saveStatus,
+			saveConvocation,
 
 			searchVisible,
 			addPerson,

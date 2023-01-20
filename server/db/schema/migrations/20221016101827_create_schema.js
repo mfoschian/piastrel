@@ -53,6 +53,8 @@ exports.up = async function(knex) {
 		table.integer('bucket_id').nullable().index();
 		table.string('status', 20).nullable();
 		table.text('note').nullable();
+		table.date('doc_dt');
+		table.string('doc_protocol', 50);
 
 	});
 
