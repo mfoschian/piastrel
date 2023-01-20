@@ -1,5 +1,5 @@
 <template>
-	<form>
+	<form @submit.prevent @keydown.enter.prevent >
 		<div class="form-group row">
 			<label class="col-sm-4 col-form-label">Cognome:</label>
 			<div class="col-sm-8">
@@ -50,7 +50,6 @@
 				<select
 					v-model="status"
 					class="form-control"
-					@change="changeStatus"
 					:disabled="read_only"
 				>
 					<option value="convocated">Invitato</option>
@@ -68,28 +67,29 @@
 			</div>
 		</div>
 
-		<div class="row">
-			<label class="col-form-label">Contatti
-				<span class="ml-2">
-					<button class="btn btn-sm btn-outline-danger"
-						@click="addNewContact"
-						title="Nuovo Contatto"
-					>
-						<span class="bi-plus"></span>
-					</button>
-				</span>
-			</label>
+		<div class="form-group form-section">Contatti<span v-if="contact_changed"> *</span></div>
+		<div class="contact-table container">
+			<div class="row">
+				<div class="col-2 col-form-label">Telefono</div>
+				<div class="col"><input type="text" v-model="phone" class="form-control" :disabled="read_only"/></div>
+			</div>
+			<div class="row">
+				<div class="col-2 col-form-label">Indirizzo</div>
+				<div class="col"><input type="text" v-model="address" class="form-control" :disabled="read_only"/></div>
+			</div>
+			<div class="row">
+				<div class="col-2 col-form-label">CAP</div>
+				<div class="col"><input type="text" v-model="cap" class="form-control" :disabled="read_only"/></div>
+			</div>
+			<div class="row">
+				<div class="col-2 col-form-label">Comune</div>
+				<div class="col"><input type="text" v-model="municipality" class="form-control" :disabled="read_only"/></div>
+			</div>
 		</div>
-		<ContactBox v-for="c in contacts" :key="c.id"
-			:item="c"
-			@save="updateContact($event)"
-			@delete="deleteContact($event)"
-		/>
-
 
 		<div class="buttons">
 			<button @click="save" class="btn btn-danger" :disabled="(!save_enabled || read_only)">Salva</button>
-			<button @click="$emit('cancel')" class="btn btn-secondary">Annulla</button>
+			<button @click="cancel" class="btn btn-secondary">Annulla</button>
 		</div>
 	</form>
 </template>
@@ -99,10 +99,11 @@ import { ref, computed, watchEffect } from 'vue'
 import { Convocation } from '../models/Convocation';
 import { Bucket } from '../models/Bucket';
 import { Person } from '../models/Person';
-import ContactBox from '../components/ContactBox.vue';
+// import ContactBox from '../components/ContactBox.vue';
+import { isEmpty } from '../libs/utils';
 
 export default {
-	components: {ContactBox},
+	// components: {ContactBox},
 	props: {
 		item: { type: Object, required: true },
 		read_only: { type: Boolean, default: false },
@@ -114,7 +115,7 @@ export default {
 		let bucket_id = ref(null);
 		let bucket_name = computed( () => {
 			let b = Bucket.get(bucket_id.value) || {};
-			if( !b ) return 'Nessuna';
+			if( !b || !b.number ) return 'Nessuna';
 			let s = 'N. ' + b.number + ' - ' + b.name;
 			if( b.name_slo )
 				s += '/' + b.name_slo;
@@ -122,25 +123,110 @@ export default {
 		});
 
 		let contacts = ref([]);
+		const getContactValue = (cts ,type) => {
+			let c = cts.filter( c => c.type == type)[0];
+			if( c == null ) return null;
+			return c.value;
+		};
+		let contactsH = {
+			phone: ref(null),
+			address: ref(null),
+			cap: ref(null),
+			municipality: ref(null)
+		};
+		const knownContacts = Object.keys(contactsH);
+		const contact_changed = computed( () => {
+			for( let i=0; i<knownContacts.length; i++) {
+			 	let k = knownContacts[i];
+			 	let newValue = contactsH[k].value;
+			 	let oldValue = getContactValue(contacts.value, k);
+				if( newValue != oldValue ) 
+					return true;
+			}
+			return false;
+		});
 
 		watchEffect( async () => {
 			status.value = props.item.status;
 			bucket_id.value = props.item.bucket_id;
-			contacts.value = await Person.contactsOf(props.item.person_id);
+			let cts = await Person.contactsOf(props.item.person_id);
+			for( let i=0; i<knownContacts.length; i++) {
+				let k = knownContacts[i];
+				contactsH[k].value = getContactValue(cts, k);
+			}
+			contacts.value = cts;
 		});
 
-		let save_enabled = ref(false);
-		const changeStatus = () => {
-			save_enabled.value = (props.item.status!= status.value);
-			console.log('status: %s -> %s', props.item.status, status.value);
-		};
+		// let save_enabled = ref(false);
+		// const changeStatus = () => {
+		// 	save_enabled.value = (props.item.status!= status.value || contact_changed.value == true);
+		// 	console.log('status: %s -> %s', props.item.status, status.value);
+		// };
+		let status_changed = computed( () => props.item.status != status.value );
+		let save_enabled = computed( () => {
+			return (status_changed.value == true || contact_changed.value == true);
+		});
 
-		const save = () => {
+		const save = async () => {
 			if( props.read_only )
 				return;
 
-			let new_status = status.value;
-			context.emit('saveStatus', new_status);
+			// Save contacts changes
+			if( contact_changed.value == true ) {
+				try {
+					let new_contacts = [];
+					for( let i=0; i<knownContacts.length; i++ ) {
+						let k = knownContacts[i];
+						let newVal = contactsH[k].value;
+						let c = contacts.value.filter( x => x.type == k )[0];
+						if( !c && !isEmpty(newVal) ) {
+							// Add
+							c = {
+								id: null,
+								person_id: props.item.person_id,
+								type: k,
+								value: newVal
+							};
+							console.log('Adding contact: %s - %s', c.type, c.value);
+							let res = await Person.saveContact(c);
+							console.log(res);
+							new_contacts.push( res );
+						}
+						else if( c && !isEmpty(c.value) && isEmpty(newVal) ) {
+							// Delete
+							console.log('Deleting contact %s: %s - %s', c.id, c.type, c.value);
+							let res = await Person.deleteContact(c);
+							console.log(res);
+						}
+						else if( c && c.value != newVal ) {
+							// Update
+							c.value = newVal;
+							console.log('Updating contact %s: %s <- %s', c.id, c.type, c.value);
+							let res = await Person.saveContact(c);
+							console.log(res);
+							new_contacts.push( res )
+						}
+					}
+					contacts.value = new_contacts;
+				}
+				catch(err) {
+					console.error( 'Failed to save contacts' );
+					console.log( err );
+				}
+			}
+
+			if( status_changed.value == true )
+				context.emit('saveStatus', status.value);
+		};
+
+		const cancel = () => {
+			if( contact_changed.value == true ) {
+				for( let i=0; i<knownContacts.length; i++) {
+					let k = knownContacts[i];
+					contactsH[k].value = getContactValue(contacts.value, k);
+				}
+			}
+			context.emit('cancel');
 		};
 
 		const getPdf = () => {
@@ -148,50 +234,30 @@ export default {
 			window.open(url,'_blank');
 		};
 
-		const updateContact = async (c) => {
-			console.log(c);
-			let res = await Person.saveContact(c);
-			let cts = contacts.value;
-			for( let i=0; i<cts.length; i++ ) {
-				if( cts[i].id == c.id ) {
-					cts[i] = res;
-					break;
-				}
-			}
-		};
 
-		const deleteContact = async (c) => {
-			console.log('deleting contact %s', c.id);
-			await Person.deleteContact(c);
-			let cts = contacts.value;
-			for( let i=0; i<cts.length; i++ ) {
-				if( cts[i].id == c.id ) {
-					cts.splice(i,1);
-					break;
-				}
-			}
-		};
 
-		const addNewContact = () => {
-			contacts.value.push({
-				id: null,
-				person_id: props.item.person_id,
-				type: 'phone',
-				value: ''
-			});
-		};
+
+		// const addNewContact = () => {
+		// 	contacts.value.push({
+		// 		id: null,
+		// 		person_id: props.item.person_id,
+		// 		type: 'phone',
+		// 		value: ''
+		// 	});
+		// };
 
 		return {
 			status,
 			bucket_name,
 			contacts,
-			changeStatus,
+			...contactsH, contact_changed,
+			// changeStatus,
 			save_enabled,
-			save,
+			save, cancel,
 			getPdf,
-			updateContact,
-			addNewContact,
-			deleteContact
+			// updateContact,
+			// addNewContact,
+			// deleteContact
 		};
 	}
 }
@@ -206,6 +272,12 @@ export default {
 .row {
 	input[readonly] {
 		font-weight: bold;
+	}
+}
+
+.contact-table {
+	.row {
+		margin-bottom: 0.5rem;
 	}
 }
 </style>

@@ -76,9 +76,10 @@ class BaseModel {
 		// values = this.db_to_model(values);
 
 		return DB.me()(this.table_name).where({ id: id || p.id }).update( this.model_to_db(values) )
-		.then( r => {
-			console.log(r);
-		})
+		// .then( r => {
+		// 	console.log(r);
+		// 	return r;
+		// })
 		;
 	}
 
