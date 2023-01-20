@@ -45,6 +45,8 @@
 			/>
 		</div>
 
+		<div class="form-group form-section">Dettagli evento</div>
+
 		<div class="form-group">
 			<label>Presentarsi</label>
 			<div class="input-group">
@@ -106,7 +108,7 @@
 			</div>
 		</div>
 
-		<div class="form-group">Responsabile firmatario</div>
+		<div class="form-group form-section">Responsabile firmatario</div>
 
 		<div class="form-group">
 			<label>Cognome</label>

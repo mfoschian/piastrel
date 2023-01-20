@@ -15,6 +15,13 @@ form {
 		}
 	}
 
+	.form-section {
+		padding-top: 0.5rem;
+		margin-top: 0.5rem;
+		border-top: 1px solid var(--bs-modal-header-border-color);
+		font-weight: bold;
+	}
+
 	.buttons {
 		display: flex;
 		justify-content: space-around;
