@@ -38,7 +38,9 @@ import { ref, computed } from 'vue'
 
 const contact_labels = {
 	phone: 'Telefono',
-	address: 'Indirizzo'
+	address: 'Indirizzo',
+	cap: 'Cap',
+	municipality: 'Comune'
 };
 
 export default {

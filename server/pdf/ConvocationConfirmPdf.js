@@ -65,7 +65,7 @@ class ConvocationConfirmPdf extends BasePdf {
 		const protocol_dt = today;
 		const person_fullname = (person.last_name + ' ' + person.first_name).toUpperCase();
 		const person_address = contacts.address || '';
-		const person_address_mun = joinIfNotEmpty(contacts.cap||'', contacts.municipality||''); // '34011 Duino Aurisina/Devin Nabrežina';
+		const person_address_mun = joinIfNotEmpty(contacts.cap||'', contacts.municipality||'', ' - '); // '34011 Duino Aurisina/Devin Nabrežina';
 		const event_obj_it = event.title || '<mancante>'; //'Elezioni del 25 settembre 2022';
 		const event_obj_slo = event.title_slo || '<mancante>'; //'Volitve z dne 25. septembra 2022';
 		const sect_number = bucket.number || '<mancante>';
