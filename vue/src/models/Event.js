@@ -49,7 +49,24 @@ export const Event = {
 			id: null,
 			title: null,
 			date: dateValue( new Date() ),
-			active: false
+			active: false,
+			info: {
+				it: {
+					appointment_dt : null,
+					range: null
+				},
+				slo: {
+					appointment_dt : null,
+					range: null
+				},
+				signer: {
+					first_name: null,
+					last_name: null,
+					title_it: null,
+					title_slo: null,
+					sign: null
+				}
+			}
 		}
 	},
 

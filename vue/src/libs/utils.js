@@ -14,3 +14,8 @@ export function startNumber(s) {
 	if(!m) return NaN;
 	return Number(m[1]);
 };
+
+export function deepClone( obj ) {
+	let s = JSON.stringify(obj);
+	return JSON.parse(s);
+}

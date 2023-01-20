@@ -25,8 +25,9 @@
 				<div class="col"><router-link :to="{name: 'dashboard', params: {event_id: e.id}}">{{e.title}}</router-link></div>
 				<div class="col">{{e.date}}</div>
 				<div class="col">{{e.active ? 'Attivo' : 'Chiuso'}}</div>
-				<div class="col actions">
+				<div class="col actions-3">
 					<span class="btn bi-pencil" @click="edit(e)"></span>
+					<span class="btn bi-back" @click="clone(e)"></span>
 					<span class="btn bi-trash" @click="remove(e)"></span>
 				</div>
 			</div>
@@ -58,7 +59,7 @@ import { ref, computed } from 'vue'
 import BasePage from './BasePage.vue'
 import EventEditor from '../components/events/EventEditor.vue'
 import { Event } from '../models/Event'
-
+import { deepClone } from '../libs/utils'
 
 export default {
 	components: { BasePage, EventEditor },
@@ -90,7 +91,21 @@ export default {
 				title_slo: e.title_slo,
 				date: e.date,
 				active: e.active,
-				info: e.info
+				info: deepClone(e.info)
+			};
+			// debugger
+			_edited_item.value = ev;
+			dlgVisible.value = true;
+		};
+
+		const clone = (e) => {
+			let ev = {
+				id: null,
+				title: e.title,
+				title_slo: e.title_slo,
+				date: e.date,
+				active: true,
+				info: deepClone(e.info)
 			};
 			// debugger
 			_edited_item.value = ev;
@@ -130,7 +145,7 @@ export default {
 			items: _items,
 			newEvent,
 			cancel,
-			edit, save, remove,
+			edit, clone, save, remove,
 			page_error,
 			dlgVisible,
 			edited_item: _edited_item,

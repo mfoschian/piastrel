@@ -65,7 +65,7 @@ class ConvocationConfirmPdf extends BasePdf {
 		const protocol_dt = today;
 		const person_fullname = (person.last_name + ' ' + person.first_name).toUpperCase();
 		const person_address = contacts.address || '';
-		const person_address_mun = joinIfNotEmpty(contacts.cap, contacts.municipality); // '34011 Duino Aurisina/Devin Nabrežina';
+		const person_address_mun = joinIfNotEmpty(contacts.cap||'', contacts.municipality||''); // '34011 Duino Aurisina/Devin Nabrežina';
 		const event_obj_it = event.title || '<mancante>'; //'Elezioni del 25 settembre 2022';
 		const event_obj_slo = event.title_slo || '<mancante>'; //'Volitve z dne 25. septembra 2022';
 		const sect_number = bucket.number || '<mancante>';
@@ -81,7 +81,7 @@ class ConvocationConfirmPdf extends BasePdf {
 			title_it: "Titolo Responsabile (mancante)",
 			title_slo: 'Titolo Responsabile slo (mancante)',
 
-			...event.signer
+			...event_info.signer
 		};
 		// {
 		// 	first_name: 'Nataša',
@@ -186,7 +186,7 @@ class ConvocationConfirmPdf extends BasePdf {
 		// Informazioni
 		//
 		const text_it = "Le comunico che la Commissione elettorale comunale, a norma dell'art. 9 della Legge 21.12.2005, n. 270, ha deliberato di nominarLa scrutatore presso il seggio elettorale sopraindicato.\n"
-			+ "Pertanto la S.V. dovrà presentarsi alle ore "+appointment_dt_it+" presso la sezione elettorale sopraindicata per la costituzione dell’ufficio elettorale. Le operazioni di votazione si svolgeranno "+event_range_it+".\n"
+			+ "Pertanto la S.V. dovrà presentarsi "+appointment_dt_it+" presso la sezione elettorale sopraindicata per la costituzione dell’ufficio elettorale. Le operazioni di votazione si svolgeranno "+event_range_it+".\n"
 			+ "Le operazioni di scrutinio si svolgeranno subito dopo la chiusura dei seggi.\n"
 			+ "L’incarico di scrutatore è obbligatorio per le persone designate, salvo eventuale grave impedimento all'assunzione dell'incarico che dovrà essere comunicato entro 48 ore dalla notifica della presente.\n"
 			+ "Si rammenta inoltre che gli scrutatori, nell’espletamento delle loro attività, devono attenersi scrupolosamente alle disposizioni di legge ed alle istruzioni ministeriali, collaborare attivamente con il presidente di seggio, curando con precisione e speditezza ogni adempimento ad essi demandato. Si richiama inoltre la particolare attenzione sulle responsabilità di natura penale in cui possono incorrere ai sensi degli articoli 94, 100, 103, 104, 108 e 111 del T.U. 30.03.1957, n. 361, anche in ragione della qualità di pubblico ufficiale ad essi attribuita dall’art. 40, comma 3 del T.U. citato.\n"
