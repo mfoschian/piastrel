@@ -270,6 +270,59 @@ class ConvocationConfirmPdf extends BasePdf {
 		//
 		this.page_footer( PO );
 
+		//
+		// Second page
+		//
+		const buckets = params.buckets || [];
+		if( buckets.length == 0 )
+			return;
+
+		doc.addPage();
+		doc.font('LiberationSerif-Bold', 12);
+		doc.text( "Ubicazione delle sezioni elettorali");
+		doc.font('LiberationSerif', 12);
+		doc.moveDown();
+
+
+		const columns = [
+			{ label: 'Sezione', width: cm(3), align: 'left', font: { name: 'LiberationSerif-Bold'} },
+			{ label: 'Luogo', width: cm(9), align: 'left' },
+			{ label: 'Indirizzo', width: _width - cm(9+3), align: 'left' }
+		];
+
+		let table = this.addTable( columns, {
+			style: {
+				border: {
+					width: 0.75
+				},
+				padding: { x: cm(0.3), y: cmY(0.3) },
+				font: { name: 'LiberationSerif' }
+			},
+			headers_style: {
+				font: { name: 'LiberationSerif-Bold' }
+			}
+		});
+
+
+		// let rows = buckets.map( b => [
+		// 		'Sez. ' + b.number,
+		// 		joinIfNotEmpty(b.name, b.name_slo, '\n'),
+		// 		joinIfNotEmpty(b.address, b.address_slo, '\n')
+		// ]);
+		// table.draw( _margins.left, doc.y, rows );
+		table.draw( _margins.left, doc.y, (row_num) => {
+			if( row_num >= buckets.length )
+				return null;
+
+			let b = buckets[row_num];
+			return [
+				'Sez. ' + b.number,
+				joinIfNotEmpty(b.name, b.name_slo, '\n'),
+				joinIfNotEmpty(b.address, b.address_slo, '\n')
+			];
+		});
+
+		this.page_footer( PO );
 	}
 
 }

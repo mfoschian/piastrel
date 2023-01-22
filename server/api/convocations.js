@@ -38,7 +38,8 @@ router.get('/:id/confirmation.pdf', async function (req, res) {
 		return;
 	}
 
-	let bucket = await Bucket.get(conv.bucket_id);
+	let buckets = await Bucket.all();
+	let bucket = buckets.filter( b => b.id == conv.bucket_id )[0];
 	if (bucket == null) {
 		res.status(404);
 		res.json({ message: "Not Found" });
@@ -71,7 +72,8 @@ router.get('/:id/confirmation.pdf', async function (req, res) {
 		person,
 		contacts,
 		bucket,
-		event
+		event,
+		buckets
 	};
 	let filename = 'convoc_' + conv.code + '.pdf';
 	let pdf = new ConvConfirmPdf(filename);
