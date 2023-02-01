@@ -53,6 +53,7 @@
 					:disabled="read_only"
 				>
 					<option value="convocated">Invitato</option>
+					<option value="contacted">Contattato</option>
 					<option value="accepted">Accettato</option>
 					<option value="rejected">Non Accettato</option>
 					<option value="confirmed">Accettato e Confermato</option>

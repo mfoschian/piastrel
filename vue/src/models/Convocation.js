@@ -7,6 +7,7 @@ const BASE_URL = '/convocations';
 
 const Status = {
 	unknown: 'convocated',
+	contacted: 'contacted',
 	accepted: 'accepted',
 	rejected: 'rejected',
 	confirmed: 'confirmed'

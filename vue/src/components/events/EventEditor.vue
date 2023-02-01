@@ -48,6 +48,22 @@
 		<div class="form-group form-section">Dettagli evento</div>
 
 		<div class="form-group">
+			<label>Protocollo (data)</label>
+			<input type="date"
+				v-model="protocol_dt"
+				class="form-control"
+			/>
+		</div>
+		<div class="form-group">
+			<label>Protocollo (numero)</label>
+			<input type="text"
+				v-model="protocol_nr"
+				class="form-control"
+			/>
+		</div>
+
+
+		<div class="form-group">
 			<label>Presentarsi</label>
 			<div class="input-group">
 				<div class="input-group-prepend">
@@ -183,6 +199,7 @@ export default {
 	emits: [ 'save', 'cancel' ],
 	setup(props,context) {
 		let info = props.event.info || {};
+		let protocol = info.protocol || {};
 		let it_info = info.it || {};
 		let slo_info = info.slo || {};
 		let signer = info.signer || {};
@@ -192,6 +209,8 @@ export default {
 			title_slo: ref(props.event.title_slo || ""),
 			date: ref(props.event.date),
 			active: ref(!!props.event.active),
+			protocol_dt: ref(protocol.dt),
+			protocol_nr: ref(protocol.number),
 			appointment_dt_it: ref(it_info.appointment_dt),
 			appointment_dt_slo: ref(slo_info.appointment_dt),
 			range_it: ref(it_info.range),
@@ -232,6 +251,8 @@ export default {
 			if( props.event.title_slo != event.title_slo.value ) return true;
 			if( props.event.date != event.date.value ) return true;
 			if( props.event.active != event.active.value ) return true;
+			if( event.protocol_dt.value != protocol.dt ) return true;
+			if( event.protocol_nr.value != protocol.number ) return true;
 			if( event.appointment_dt_it.value != it_info.appointment_dt ) return true;
 			if( event.appointment_dt_slo.value != slo_info.appointment_dt ) return true;
 			if( event.range_it.value != it_info.range ) return true;
@@ -256,9 +277,12 @@ export default {
 			event.active.value = !!props.event.active;
 
 			info = props.event.info || {};
+			protocol = info.protocol || {};
 			it_info = info.it || {};
 			slo_info = info.slo || {};
 			signer = info.signer || {};
+			event.protocol_dt.value = protocol.dt;
+			event.protocol_nr.value = protocol.number;
 			event.appointment_dt_it.value = it_info.appointment_dt;
 			event.appointment_dt_slo.value = slo_info.appointment_dt;
 			event.range_it.value = it_info.range;
@@ -278,6 +302,10 @@ export default {
 				date: event.date.value,
 				active: event.active.value,
 				info: {
+					protocol: {
+						dt: event.protocol_dt.value,
+						number: event.protocol_nr.value
+					},
 					it: {
 						appointment_dt : event.appointment_dt_it.value,
 						range: event.range_it.value

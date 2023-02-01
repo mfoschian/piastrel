@@ -6,8 +6,12 @@ let _items = ref([]);
 let _active_event = ref(null);
 
 function adjustRecord( r ) {
-	if( r )
+	if( r ) {
 		r.date = dateValue(r.date);
+		if( r.info && r.info.protocol && r.info.protocol.dt ) {
+			r.info.protocol.dt = dateValue( r.info.protocol.dt );
+		}
+	}
 	return r;
 }
 
@@ -65,6 +69,10 @@ export const Event = {
 					title_it: null,
 					title_slo: null,
 					sign: null
+				},
+				protocol: {
+					dt: null,
+					number: null
 				}
 			}
 		}

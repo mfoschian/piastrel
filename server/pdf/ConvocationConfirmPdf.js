@@ -57,12 +57,13 @@ class ConvocationConfirmPdf extends BasePdf {
 		const bucket = params.bucket || {};
 		const event = params.event || {};
 		const event_info = event.info || {};
+		const event_protocol = event_info.protocol || {};
 		const info_it = event_info.it || {};
 		const info_slo = event_info.slo || {};
 
 		const today = new Date();
-		const protocol_number = conv.doc_number || '<mancante>';
-		const protocol_dt = conv.doc_dt || today;
+		const protocol_number = conv.doc_number || event_protocol.number || '<mancante>';
+		const protocol_dt = conv.doc_dt || event_protocol.dt || today;
 		const person_fullname = (person.last_name + ' ' + person.first_name).toUpperCase();
 		const person_address = contacts.address || '';
 		const person_address_mun = joinIfNotEmpty(contacts.cap||'', contacts.municipality||'', ' - '); // '34011 Duino Aurisina/Devin Nabrežina';

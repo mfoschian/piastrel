@@ -113,6 +113,9 @@ export const dropped = async (ev, bid, status) => {
 	&.st-accepted {
 		background-color: rgb(var(--bs-primary-rgb));
 	}
+	&.st-contacted {
+		border: 1px solid rgb(var(--bs-primary-rgb));
+	}
 	&.st-confirmed {
 		background-color: rgb(var(--bs-success-rgb));
 	}
