@@ -16,9 +16,6 @@ const path = require('path')
 app.use('/', express.static(path.join(__dirname, 'public')))
 app.use(fileUpload());
 
-const upload = require('./backoffice/upload.js');
-app.use('/upload',upload);
-
 // Configuring body parser middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

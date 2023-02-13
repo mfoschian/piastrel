@@ -72,5 +72,8 @@ router.delete('/:id', async function (req, res) {
 		res.send({success: true});
 });
 
+const upload = require('../backoffice/upload.js');
+router.use('/:id/upload',upload);
+
 
 module.exports = router;

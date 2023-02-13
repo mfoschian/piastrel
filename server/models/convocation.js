@@ -57,7 +57,16 @@ class Convocation extends BaseModel {
 			});
 	}
 
-
+	static find(event_id, person_id) {
+		// console.log('Selecting all from %s', this.table_name);
+		return this.db()
+			.select(this.join_fields).from(this.table_name + ' as c')
+			.join('persons as p', 'p.id', 'c.person_id')
+			.where( {'c.event_id': event_id, 'c.person_id': person_id })
+			.then( results => results.map( r => this.db_to_model(r) ) )
+			;
+		// console.log( s.toSQL() );
+	}
 }
 
 module.exports = Convocation;

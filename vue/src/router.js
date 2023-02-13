@@ -18,6 +18,12 @@ const routes = [
 		path: '/events/:event_id/manage',
 		component: DashboardPage,
 		props: true
+	},,
+	{
+		name: 'personsUpload',
+		path: '/events/:event_id/persons/upload',
+		component: UploadPersonPage,
+		props: true
 	},
 	{
 		path: '/events',
@@ -26,10 +32,6 @@ const routes = [
 	{
 		path: '/buckets',
 		component: BucketPage
-	},
-	{
-		path: '/backoffice/upload/persons',
-		component: UploadPersonPage
 	}
 ];
 

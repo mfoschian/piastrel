@@ -27,6 +27,7 @@
 				<div class="col">{{e.active ? 'Attivo' : 'Chiuso'}}</div>
 				<div class="col actions-3">
 					<span class="btn bi-pencil" @click="edit(e)"></span>
+					<router-link :to="{name: 'personsUpload', params: {event_id: e.id}}"><span class="btn bi-upload" ></span></router-link>
 					<span class="btn bi-back" @click="clone(e)"></span>
 					<span class="btn bi-trash" @click="remove(e)"></span>
 				</div>

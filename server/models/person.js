@@ -9,6 +9,10 @@ class Person extends BaseModel {
 	static search_by_name(query) {
 		return this.db().select().from(this.table_name).whereLike( 'last_name', '%'+query+'%' );
 	}
+
+	static find_by_code(query) {
+		return this.db().select().from(this.table_name).where({code: query});
+	}
 }
 
 module.exports = Person;
