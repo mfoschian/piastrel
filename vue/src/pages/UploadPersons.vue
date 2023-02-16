@@ -25,8 +25,13 @@
 
 			<button class="btn btn-success"
 				type="submit"
-				:disabled="!validFile"
-			>Carica</button>
+				:disabled="!validFile || uploading"
+			>
+				<span class="spinner-border spinner-border-sm me-2"
+					v-if="uploading">
+				</span>
+				Carica
+			</button>
 			
 		</form>
 	</BasePage>
@@ -50,6 +55,7 @@ const props = defineProps({
 let theForm=ref(null);
 let filename=ref(null);
 let separator=ref(props.separator);
+let uploading=ref(false);
 
 const validFile=computed( () => !isEmpty(filename.value) );
 
@@ -58,7 +64,9 @@ const theEvent = Event.get_active();
 const router = useRouter();
 
 const upload = async () => {
+	uploading.value = true;
 	let result = await sendForm( theForm );
+	uploading.value = false;
 	if( result == null ) {
 		console.error('Persons upload filed for event %s', props.event_id);
 		alert('Caricamento Fallito');
