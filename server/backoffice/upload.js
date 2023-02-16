@@ -17,6 +17,7 @@ router.post('/persons', async function (req, res) {
 	}
 
 	personsFile = req.files.personsFile;
+	separator = req.body.separator || ';';
 
 	try {
 		uploadPath = __dirname + '/data/' + personsFile.name;
@@ -29,7 +30,7 @@ router.post('/persons', async function (req, res) {
 
 	try {
 		console.log( 'importing persons from %s', uploadPath);
-		let stats = await import_persons(uploadPath, event_id);
+		let stats = await import_persons(uploadPath, event_id, {separator: separator});
 		console.log('persons imported');
 	}
 	catch( err ) {

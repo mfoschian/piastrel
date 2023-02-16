@@ -2,7 +2,7 @@ let Person = require('../models/person.js');
 let Convocation = require('../models/convocation.js');
 
 
-async function read_csv(filename) {
+async function read_csv(filename, options) {
 	const fs = require("fs");
 	const csvParser = require("csv-parser");
 
@@ -10,7 +10,7 @@ async function read_csv(filename) {
 
 	return new Promise( (resolve,reject) => {
 	fs.createReadStream( filename )
-		.pipe(csvParser())
+		.pipe(csvParser(options))
 		.on("data", (data) => {
 			result.push(data);
 		})
@@ -21,9 +21,9 @@ async function read_csv(filename) {
 	});
 }
 
-async function import_persons(filename, event_id) {
+async function import_persons(filename, event_id, options) {
 
-	let new_items = await read_csv(filename);
+	let new_items = await read_csv(filename, options);
 	console.log('Read %d records from %s', new_items.length, filename);
 
 	let stats = { inserted: 0, errors: 0 };
