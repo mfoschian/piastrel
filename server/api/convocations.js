@@ -75,8 +75,9 @@ router.get('/:id/confirmation.pdf', async function (req, res) {
 		event,
 		buckets
 	};
+
 	let filename = 'convoc_' + conv.code + '.pdf';
-	let pdf = new ConvConfirmPdf(filename);
+	let pdf = new ConvConfirmPdf(filename, {bucket_page: event.info && event.info.print_bucket_page == true});
 	let ok = pdf.tryRender(params);
 	if(!ok) console.error( 'ERROR creating Confirmation pdf' );
 	pdf.send(req, res);

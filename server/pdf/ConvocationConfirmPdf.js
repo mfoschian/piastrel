@@ -13,7 +13,7 @@ function cmY(x) {
 
 class ConvocationConfirmPdf extends BasePdf {
 
-	constructor(filename) {
+	constructor(filename, options) {
 		super(filename, {
 			size: PAGE_SIZE,
 			margins: { top: cmY(1.25), right: cm(1.8), bottom: 0, left: cm(1.8) } // bottom 2.3
@@ -24,6 +24,10 @@ class ConvocationConfirmPdf extends BasePdf {
 		this.addFont( 'LiberationSerif', this.assets.font('LiberationSerif-Regular.ttf') );
 		this.addFont( 'Bookman Old Style', this.assets.font('BOOKOS.TTF') );
 		this.addFont( 'Bookman Old Style-Bold', this.assets.font('BOOKOSB.TTF') );
+
+		if( options ) {
+			this.add_bucket_page = options.bucket_page == true ? true : false;
+		}
 	}
 
 	page_footer( PO ) {
@@ -274,6 +278,9 @@ class ConvocationConfirmPdf extends BasePdf {
 		//
 		// Second page
 		//
+		if( this.add_bucket_page != true )
+			return;
+
 		const buckets = params.buckets || [];
 		if( buckets.length == 0 )
 			return;
