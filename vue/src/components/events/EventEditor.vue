@@ -62,6 +62,21 @@
 			/>
 		</div>
 
+		<div class="form-group">
+			<label>Verbale (data)</label>
+			<input type="date"
+				v-model="document_dt"
+				class="form-control"
+			/>
+		</div>
+		<div class="form-group">
+			<label>Verbale (numero)</label>
+			<input type="text"
+				v-model="document_nr"
+				class="form-control"
+			/>
+		</div>
+
 
 		<div class="form-group">
 			<label>Presentarsi</label>
@@ -200,6 +215,7 @@ export default {
 	setup(props,context) {
 		let info = props.event.info || {};
 		let protocol = info.protocol || {};
+		let document = info.document || {};
 		let it_info = info.it || {};
 		let slo_info = info.slo || {};
 		let signer = info.signer || {};
@@ -211,6 +227,8 @@ export default {
 			active: ref(!!props.event.active),
 			protocol_dt: ref(protocol.dt),
 			protocol_nr: ref(protocol.number),
+			document_dt: ref(document.dt),
+			document_nr: ref(document.number),
 			appointment_dt_it: ref(it_info.appointment_dt),
 			appointment_dt_slo: ref(slo_info.appointment_dt),
 			range_it: ref(it_info.range),
@@ -253,6 +271,8 @@ export default {
 			if( props.event.active != event.active.value ) return true;
 			if( event.protocol_dt.value != protocol.dt ) return true;
 			if( event.protocol_nr.value != protocol.number ) return true;
+			if( event.document_dt.value != document.dt ) return true;
+			if( event.document_nr.value != document.number ) return true;
 			if( event.appointment_dt_it.value != it_info.appointment_dt ) return true;
 			if( event.appointment_dt_slo.value != slo_info.appointment_dt ) return true;
 			if( event.range_it.value != it_info.range ) return true;
@@ -278,11 +298,14 @@ export default {
 
 			info = props.event.info || {};
 			protocol = info.protocol || {};
+			document = info.document || {};
 			it_info = info.it || {};
 			slo_info = info.slo || {};
 			signer = info.signer || {};
 			event.protocol_dt.value = protocol.dt;
 			event.protocol_nr.value = protocol.number;
+			event.document_dt.value = document.dt;
+			event.document_nr.value = document.number;
 			event.appointment_dt_it.value = it_info.appointment_dt;
 			event.appointment_dt_slo.value = slo_info.appointment_dt;
 			event.range_it.value = it_info.range;
@@ -305,6 +328,10 @@ export default {
 					protocol: {
 						dt: event.protocol_dt.value,
 						number: event.protocol_nr.value
+					},
+					document: {
+						dt: event.document_dt.value,
+						number: event.document_nr.value
 					},
 					it: {
 						appointment_dt : event.appointment_dt_it.value,

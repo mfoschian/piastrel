@@ -62,12 +62,15 @@ class ConvocationConfirmPdf extends BasePdf {
 		const event = params.event || {};
 		const event_info = event.info || {};
 		const event_protocol = event_info.protocol || {};
+		const event_document = event_info.document || {};
 		const info_it = event_info.it || {};
 		const info_slo = event_info.slo || {};
 
 		const today = new Date();
 		const protocol_number = conv.doc_number || event_protocol.number || '<mancante>';
 		const protocol_dt = conv.doc_dt || event_protocol.dt || today;
+		const document_number = event_document.number || '<mancante>';
+		const document_dt = event_document.dt || today;
 		const person_fullname = (person.last_name + ' ' + person.first_name).toUpperCase();
 		const person_address = contacts.address || '';
 		const person_address_mun = joinIfNotEmpty(contacts.cap||'', contacts.municipality||'', ' - '); // '34011 Duino Aurisina/Devin Nabrežina';
@@ -127,7 +130,7 @@ class ConvocationConfirmPdf extends BasePdf {
 		// - N.Protocollo, numero documento, data e luogo
 		doc.font('LiberationSerif', 11);
 		const h_text_left = 'Prot. n. ' + protocol_number
-			+ '\nVerbale n./Zapisnik št. '+(conv.doc_number || 26)+' dd./z dne ' + formatDate('DD/MM/YYYY', protocol_dt)
+			+ '\nVerbale n./Zapisnik št. '+(document_number)+' dd./z dne ' + formatDate('DD/MM/YYYY', document_dt)
 		;
 		const h_text_right = 'Aurisina/Nabrežina, ' + formatDate('DD.MM.YYYY', today);
 

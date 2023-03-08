@@ -24,8 +24,13 @@ class Event extends BaseModel {
 		let info = record['info'];
 		if (typeof(info) == 'string' ) {
 			let info_js = JSON.parse(info);
+
 			if( info_js && info_js.protocol && info_js.protocol.dt )
 				info_js.protocol.dt = this.parse_dt(info_js.protocol.dt);
+
+			if( info_js && info_js.document && info_js.document.dt )
+				info_js.document.dt = this.parse_dt(info_js.document.dt);
+
 			record['info'] = info_js;
 		}
 		return record;

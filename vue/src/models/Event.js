@@ -73,6 +73,10 @@ export const Event = {
 				protocol: {
 					dt: null,
 					number: null
+				},
+				document: {
+					dt: null,
+					number: null
 				}
 			}
 		}
