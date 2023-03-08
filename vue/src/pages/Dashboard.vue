@@ -101,7 +101,8 @@ export default {
 				id: c.id,
 				status: x.status,
 				doc_dt: x.doc_dt,
-				doc_number: x.doc_number
+				doc_number: x.doc_number,
+				note: x.note
 			}
 			let res = await Convocation.save(upd);
 			detailsVisible.value = false;

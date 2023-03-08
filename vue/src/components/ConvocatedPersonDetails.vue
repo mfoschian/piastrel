@@ -78,6 +78,9 @@
 			</div>
 		</div>
 
+		<div class="form-group form-section">Note</div>
+		<textarea v-model="note" class="form-control"></textarea>
+
 		<div class="form-group form-section">Contatti<span v-if="contact_changed"> *</span></div>
 		<div class="contact-table container">
 			<div class="row">
@@ -139,6 +142,8 @@ export default {
 			|| doc_dt.value != props.item.doc_dt
 		);
 
+		let note = ref(null);
+		const note_changed = computed( () => note.value != props.item.note );
 
 		let contacts = ref([]);
 		const getContactValue = (cts ,type) => {
@@ -169,6 +174,7 @@ export default {
 			bucket_id.value = props.item.bucket_id;
 			doc_number.value = props.item.doc_number;
 			doc_dt.value = props.item.doc_dt;
+			note.value = props.item.note;
 			let cts = await Person.contactsOf(props.item.person_id);
 			for( let i=0; i<knownContacts.length; i++) {
 				let k = knownContacts[i];
@@ -180,7 +186,11 @@ export default {
 
 		let status_changed = computed( () => props.item.status != status.value );
 		let save_enabled = computed( () => {
-			return (status_changed.value == true || contact_changed.value == true || doc_changed.value == true);
+			return (status_changed.value == true
+				|| contact_changed.value == true
+				|| doc_changed.value == true
+				|| note_changed.value == true
+			);
 		});
 
 		const save = async () => {
@@ -240,6 +250,9 @@ export default {
 				c.doc_dt = doc_dt.value;
 				c.doc_number = doc_number.value;
 			}
+			if( note_changed.value == true ) {
+				c.note = note.value;
+			}
 			context.emit('saveConvocation', c);
 		};
 
@@ -280,7 +293,7 @@ export default {
 			bucket_name,
 			contacts,
 			...contactsH, contact_changed,
-			doc_dt, doc_number,
+			doc_dt, doc_number, note,
 			save_enabled,
 			save, cancel,
 			getPdf,
@@ -299,6 +312,7 @@ export default {
 	input[readonly] {
 		font-weight: bold;
 	}
+	
 }
 
 .contact-table {
