@@ -11,6 +11,9 @@ function adjustRecord( r ) {
 		if( r.info && r.info.protocol && r.info.protocol.dt ) {
 			r.info.protocol.dt = dateValue( r.info.protocol.dt );
 		}
+		if( r.info && r.info.document && r.info.document.dt ) {
+			r.info.document.dt = dateValue( r.info.document.dt );
+		}
 	}
 	return r;
 }
