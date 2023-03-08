@@ -86,7 +86,7 @@ export default {
 	.bucket {
 		flex-grow: 1;
 
-		height: 10rem;
+		min-height: 10rem;
 		min-width: 10rem;
 		margin: 0.5rem;
 		padding: 0.5em;
