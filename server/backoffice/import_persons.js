@@ -1,6 +1,8 @@
 let Person = require('../models/person.js');
 let Convocation = require('../models/convocation.js');
+let Contact = require('../models/contact.js');
 
+const trimmed = require('../lib/utils.js').trimmed;
 
 async function read_csv(filename, options) {
 	const fs = require("fs");
@@ -59,20 +61,51 @@ async function import_persons(filename, event_id, options) {
 		}
 	
 		// Insert Person in convocations
-		let c = await Convocation.find( event_id, p.id );
-		if( c == null || c.length == 0 ) {
+		let cc = await Convocation.find( event_id, p.id );
+		if( cc == null || cc.length == 0 ) {
 			// Person is not convocated: insert
 			const c = {
 				event_id: event_id,
 				person_id: p.id,
 				bucket_id: null,
-				status: 'convocated'
+				status: 'convocated',
+				note: r.note
 			};
 			await Convocation.create(c);
 		}
+		else {
+			// Update note field on person convocation, if given
+			let c = cc[0];
+			const rn = trimmed(r.note);
+			const cn = trimmed(c.note);
+			if( rn && (!cn || cn != rn) ) {
+				try {
+					await Convocation.update( {note: r.note}, c.id );
+				}
+				catch( err ) {
+					console.error(err);
+				}
+			}
+		}
 
 		// Update contacts
+		const known_contacts = ['phone','address','cap','municipality'];
+		const given_contacts = known_contacts
+			.map( c => ({
+				type: c,
+				value: trimmed(r[c])
+			}))
+			.filter( c => c.value != null );
 
+		for( let i=0; i < given_contacts.length; i++ ) {
+			let c = given_contacts[i];
+			try {
+				await Contact.upsert( p.id, c.type, c.value );
+			}
+			catch( err ) {
+				console.error(err);
+			}
+		}
 	}
 
 	console.log('Done. Inserted: %d, errors: %d', stats.inserted, stats.errors);

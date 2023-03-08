@@ -15,7 +15,22 @@ function joinIfNotEmpty( a, b, sep ) {
 	return sep ? a + sep + b : a + b;
 }
 
+function trimmed(s) {
+	if( s == null ) return null;
+	try {
+		let v = s.trim();
+		if( v == '' )
+			return null;
+		return v;
+	}
+	catch( err ) {
+		console.error( err );
+		return null;
+	}
+}
+
 module.exports = {
 	isEmpty,
-	joinIfNotEmpty
+	joinIfNotEmpty,
+	trimmed
 };
