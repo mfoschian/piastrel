@@ -1,4 +1,5 @@
-const BASE_URL = 'http://localhost:3000/api'
+// const BASE_URL = 'http://localhost:3000/api'
+const BASE_URL = '/api'
 
 import { getJson, postJson, putJson, deleteJson } from './libs/json-fetch'
 
