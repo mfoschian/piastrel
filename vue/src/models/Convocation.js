@@ -86,15 +86,15 @@ export const Convocation = {
 
 	async save( c ) {
 		if( c && c.id == null ) {
-			let new_id = await Server.create('/convocations', c);
-			let res = await Server.get('/convocations/' + new_id);
+			let new_id = await Server.create(BASE_URL, c);
+			let res = await Server.get(BASE_URL + '/' + new_id);
 			if( res ) {
 				_items.value.push( res );
 			}
 			return res;
 		}
 		else {
-			let res = await Server.update('/convocations/' + c.id, c );
+			let res = await Server.update(BASE_URL + '/' + c.id, c );
 			res = adjustRecord(res);
 
 			let items = _items.value;
@@ -112,7 +112,7 @@ export const Convocation = {
 		if( !id )
 			return;
 
-		let res = await Server.remove( '/convocations/' + id );
+		let res = await Server.remove( BASE_URL + '/' + id );
 
 		let items = _items.value;
 		for( let i=0; i<items.length; i++ ) {
@@ -124,6 +124,16 @@ export const Convocation = {
 
 	confirmPdfUrl( id ) {
 		return Server.url_for(BASE_URL + '/' + id + '/confirmation.pdf');
+	},
+
+	bucketConfirmPdfUrl( bucket_id ) {
+		let conv = _items.value[0];
+		if( conv == null ) {
+			console.error('No convocations');
+			return null;
+		}
+		let event_id = conv.event_id;
+		return Server.url_for('/events/' + event_id + '/buckets/' + bucket_id + '/confirmations.pdf');
 	}
 
 };

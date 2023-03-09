@@ -45,6 +45,16 @@ class Convocation extends BaseModel {
 		// console.log( s.toSQL() );
 	}
 
+	static pid_of_event_bucket(event_id, bucket_id) {
+		// console.log('Selecting all from %s', this.table_name);
+		return this.db()
+			.select(['id', 'person_id']).from(this.table_name)
+			.where( {event_id: event_id, bucket_id: bucket_id })
+			// .then( results => results.map( r => this.db_to_model(r) ) )
+			;
+		// console.log( s.toSQL() );
+	}
+
 	static get(id) {
 		return this.db()
 			.select(this.join_fields).from(this.table_name +' as c')

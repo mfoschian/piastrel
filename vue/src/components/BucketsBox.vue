@@ -6,11 +6,14 @@
 		>
 			<div class="title" :title="b.address">
 				<div class="bnumber">N. {{ b.number }}</div>
-				<div>
+				<div class="bname">
 					{{  b.name }}
 					<template v-if="b.name_slo">
 						<br><span class="sloname">{{  b.name_slo }}</span>
 					</template>
+				</div>
+				<div class="bicons" v-if="assigned_to(b.id).length > 0">
+					<span class="bi bi-filetype-pdf" @click="print_bucket_confirmations(b.id)"></span>
 				</div>
 			</div>
 			<div class="body">
@@ -63,12 +66,17 @@ export default {
 			return Convocation.inBucket(bid);
 		};
 
+		const print_bucket_confirmations = (bid) => {
+			let url = Convocation.bucketConfirmPdfUrl(bid);
+			window.open(url,'_blank');
+		};
+
 		return {
 			buckets,
 			sorted_buckets,
 			dropcheck,
 			dropped,
-			assigned_to
+			assigned_to, print_bucket_confirmations
 		}
 	}
 }
@@ -108,6 +116,15 @@ export default {
 				font-weight: bold;
 				padding-right: 0.5rem;
 				border-right: 1px solid var(--fourth-col);
+			}
+
+			.bname {
+				flex-grow: 2;
+			}
+
+			.bicons {
+				margin-right: 0.5rem;
+				cursor: pointer;
 			}
 
 			.sloname {
