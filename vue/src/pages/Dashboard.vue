@@ -1,7 +1,7 @@
 <template>
 	<BasePage :subtitle="subtitle">
 		<template #topbar >
-			<h3>Gestione Scrutatori</h3>
+			<h3>Gestione Scrutatori <span class="bi bi-filetype-csv report-box" @click="getEventReport()" title="Status Report"></span></h3>
 		</template>
 		<div class="dashboard container fluid">
 			<h4 v-if="!has_event">Nessun evento attivo:
@@ -126,6 +126,11 @@ export default {
 			searchVisible.value = false;
 		};
 
+		const getEventReport = () => {
+			const url = Event.reportUrl( _event.value.id, 'status' );
+			window.open(url,'_blank');
+		};
+
 		return {
 			has_event, 
 			event: _event,
@@ -135,6 +140,7 @@ export default {
 			convocation,
 			openDetails,
 			saveConvocation,
+			getEventReport,
 
 			searchVisible,
 			addPerson,
@@ -144,3 +150,9 @@ export default {
 	}
 }
 </script>
+
+<style>
+.report-box {
+	cursor: pointer;
+}
+</style>

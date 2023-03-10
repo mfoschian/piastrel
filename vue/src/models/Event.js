@@ -121,6 +121,11 @@ export const Event = {
 				_items.value.splice(i,1);
 			}
 		}
-	}
+	},
+
+	reportUrl( event_id, report_name ) {
+		return Server.url_for('/events/' + event_id + '/report/' + report_name);
+	},
+
 
 };

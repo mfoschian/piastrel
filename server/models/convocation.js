@@ -45,6 +45,30 @@ class Convocation extends BaseModel {
 		// console.log( s.toSQL() );
 	}
 
+	static of_event_detailed(event_id) {
+		// console.log('Selecting all from %s', this.table_name);
+		const fields = [
+			'b.number as bucket_nr', 'b.name as bucket_name',
+			'p.last_name as last_name', 'p.first_name as first_name', 'p.code as code',
+			'c.status as status', 'c.note as note',
+			'r.value as phone'
+		];
+
+		return this.db()
+			.select(fields).from(this.table_name + ' as c')
+			.join('persons as p', 'p.id', 'c.person_id')
+			.leftOuterJoin('buckets as b', 'b.id', 'c.bucket_id')
+			.leftOuterJoin('contacts as r', function() {
+				this
+					.on('r.person_id', '=', 'c.person_id')
+					.andOnVal('r.type','=','phone');
+			})
+			.where( {'c.event_id': event_id })
+			.orderBy(['bucket_nr', 'first_name', 'last_name'])
+			//.then( results => results.map( r => this.db_to_model(r) ) )
+			;
+	}
+
 	static pid_of_event_bucket(event_id, bucket_id) {
 		// console.log('Selecting all from %s', this.table_name);
 		return this.db()

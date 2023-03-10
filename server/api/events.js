@@ -35,6 +35,37 @@ router.get('/:id', async function (req, res) {
 	}
 });
 
+router.get('/:id/report/:name', async function (req, res) {
+	let event_id = req.params.id;
+	let items = await Convocation.of_event_detailed( event_id ) || [];
+
+	const BaseCsv = require('../reports/BaseCsv.js');
+
+	// TODO: choose a report class dynamically
+	const report_name = req.params.name;
+	if( report_name != 'status' ) {
+		res.status(404);
+		res.json({ message: "Not Found" });
+		return;
+	}
+
+	try {
+		let filename = 'Report_of_event_' + event_id + '.csv';
+		let columns = Object.keys((items[0] || {}));
+		let report = new BaseCsv(filename, columns);
+
+		let ok = report.tryRender(items);
+		if(!ok) console.error( 'ERROR creating report %s', report_name );
+		report.send(req, res);
+	}
+	catch( err ) {
+		res.status(500);
+		res.json({ error: err });
+	}
+
+});
+
+
 router.get('/:id/buckets/:bid/confirmations.pdf', async function (req, res) {
 
 	let event = await Event.get(req.params.id);
