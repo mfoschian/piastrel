@@ -1,4 +1,5 @@
 import Server from '../Server'
+import { startNumber } from '../libs/utils'
 import { ref } from 'vue'
 
 let _items = ref([]);
@@ -69,6 +70,17 @@ export const Bucket = {
 				_items.value.splice(i,1);
 			}
 		}
+	},
+
+	cmp_by_number( b1, b2 ) {
+		const sort_cmp = (a,b) => a > b ? 1 : a < b ? -1 : 0;
+
+		let n1 = b1 ? startNumber(b1.number || '') : '';
+		let n2 = b2 ? startNumber(b2.number || '') : '';
+		if( !isNaN(n1) && !isNaN(n2) )
+			return sort_cmp(n1,n2);
+		else
+			return sort_cmp(b1.number, b2.number);
 	}
 
 

@@ -4,6 +4,9 @@
 		:subtitle="subtitle"
 	>
 		<slot name="topbar"></slot>
+		<template #subtitle>
+			<slot name="subtitle">{{ subtitle }}</slot>
+		</template>
 	</TopBar>
 	<div v-if="network.error" class="errorbox bg-danger">
 		<div >Errore di rete (server non raggiungibile)</div>

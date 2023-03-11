@@ -7,7 +7,11 @@
 		</div>
 
 		<!-- <h4><span v-if="event_name == ''" class="badge badge-warning">Scegliere l'evento</span></h4> -->
-		<h4 v-if="subtitle"><span class="badge bg-warning">{{ subtitle }}</span></h4>
+		<h4 v-if="subtitle">
+			<span class="badge bg-warning">
+				<slot name="subtitle">{{ subtitle }}</slot>
+			</span>
+		</h4>
 	</div>
 </template>
 

@@ -33,7 +33,7 @@ import { Convocation } from '../models/Convocation'
 
 import ConvocatedPersonBox from './ConvocatedPersonBox.vue'
 import { dropcheck, dropped } from './ConvocatedPersonBox.vue'
-import { startNumber } from '../libs/utils'
+// import { startNumber } from '../libs/utils'
 
 import { computed } from 'vue'
 
@@ -48,17 +48,18 @@ export default {
 
 		const sorted_buckets = computed( () => {
 			let b = buckets.value.concat([]);
-			const sort_cmp = (a,b) => a > b ? 1 : a < b ? -1 : 0;
+			// const sort_cmp = (a,b) => a > b ? 1 : a < b ? -1 : 0;
 
-			let res = b.sort( (b1,b2) => {
-				let n1 = startNumber(b1.number);
-				let n2 = startNumber(b2.number);
-				if( !isNaN(n1) && !isNaN(n2) )
-					return sort_cmp(n1,n2);
-				else
-					return sort_cmp(b1.number, b2.number);
-			});
-			return res;
+			// let res = b.sort( (b1,b2) => {
+			// 	let n1 = startNumber(b1.number);
+			// 	let n2 = startNumber(b2.number);
+			// 	if( !isNaN(n1) && !isNaN(n2) )
+			// 		return sort_cmp(n1,n2);
+			// 	else
+			// 		return sort_cmp(b1.number, b2.number);
+			// });
+			// return res;
+			return b.sort( Bucket.cmp_by_number );
 		});
 
 		await Bucket.load();

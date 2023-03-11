@@ -1,7 +1,14 @@
 <template>
 	<BasePage :subtitle="subtitle">
 		<template #topbar >
-			<h3>Gestione Scrutatori <span class="bi bi-filetype-csv report-box" @click="getEventReport()" title="Status Report"></span></h3>
+			<!-- <h3>Gestione Scrutatori <span class="bi bi-filetype-csv report-box" @click="getEventReport()" title="Status Report"></span></h3> -->
+			<h3>Gestione Scrutatori</h3>
+		</template>
+		<template #subtitle>
+			{{ subtitle }}<span class="buttons">
+				<span class="bi bi-filetype-csv button" @click="getEventReport()" title="Status Report"></span>
+				<span class="bi bi-table button" @click="toggleViewType()" title="Visualizzazione tabella"></span>
+			</span>
 		</template>
 		<div class="dashboard container fluid">
 			<h4 v-if="!has_event">Nessun evento attivo:
@@ -11,14 +18,24 @@
 			</h4>
 
 			<template v-else>
-				<ConvocationsBox :event_id="event.id" :read_only="read_only"
-					@openSearchBox="searchVisible=true"
-					@details="openDetails"
-				/>
-
-				<BucketsBox @details="openDetails" :read_only="read_only" />
-
-				<RejectedBox @details="openDetails" :read_only="read_only" />
+				<template v-if="viewType=='piastrel'">
+					<PiastrelView 
+						:event="event"
+						:read_only="read_only"
+						@openSearchBox="searchVisible=true"
+						@details="openDetails"
+					/>
+				</template>
+				<template v-else>
+					<!-- Table View -->
+					<!-- <XTable :columns="fields" :rows="table_rows" /> -->
+					<TableView 
+						:event="event"
+						:read_only="read_only"
+						@openSearchBox="searchVisible=true"
+						@details="openDetails"
+					/>
+				</template>
 			</template>
 
 			<div class="modal fade" :class="{ show: detailsVisible, 'd-block': detailsVisible }">
@@ -62,18 +79,27 @@
 import { computed, ref, watchEffect } from 'vue'
 
 import BasePage from './BasePage.vue'
-import BucketsBox from '../components/BucketsBox.vue'
-import ConvocationsBox from '../components/ConvocationsBox.vue'
+// import BucketsBox from '../components/BucketsBox.vue'
+// import ConvocationsBox from '../components/ConvocationsBox.vue'
+// import RejectedBox from '../components/RejectedBox.vue'
+import PiastrelView from '../components/views/PiastrelView.vue'
+import TableView from '../components/views/TableView.vue'
+
 import ConvocatedPersonDetails from '../components/ConvocatedPersonDetails.vue'
-import RejectedBox from '../components/RejectedBox.vue'
 import PersonSearch from '../components/PersonSearch.vue'
+// import XTable from '../components/table/table.vue'
 
 import { Event } from '../models/Event'
 import { Convocation } from '../models/Convocation'
 
 
 export default {
-	components: { BasePage, ConvocationsBox, BucketsBox, RejectedBox, ConvocatedPersonDetails, PersonSearch },
+	components: { BasePage, 
+		// ConvocationsBox, BucketsBox, RejectedBox,
+		// XTable,
+		PiastrelView, TableView,
+		ConvocatedPersonDetails, PersonSearch, 
+	},
 	props: {
 		event_id: { type: [String,Number], default: null }
 	},
@@ -131,10 +157,23 @@ export default {
 			window.open(url,'_blank');
 		};
 
+
+		// Table Part
+
+		let viewType = ref('piastrel');
+		const toggleViewType = () => {
+			const view_modes = ['piastrel', 'table'];
+			let x = view_modes.indexOf(viewType.value) + 1;
+			if( x >= view_modes.length ) x = 0;
+
+			viewType.value = view_modes[x];
+		}
+
 		return {
 			has_event, 
 			event: _event,
 			subtitle,
+			viewType, toggleViewType,
 
 			detailsVisible,
 			convocation,
@@ -151,8 +190,22 @@ export default {
 }
 </script>
 
-<style>
-.report-box {
-	cursor: pointer;
+<style lang="scss">
+.buttons {
+
+	&::before {
+		content: ' - ';
+	}
+
+	// margin-left: 1rem;
+
+	.button {
+		cursor: pointer;
+		margin-left: 0.5rem;
+
+		&:hover {
+			color: var(--main-col);
+		}
+	}
 }
 </style>
