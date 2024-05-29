@@ -102,3 +102,13 @@ dist
 
 # TernJS port file
 .tern-port
+server/public/favicon.svg
+server/public/index.html
+server/public/test.html
+server/public/vite.svg
+server/public/assets/bootstrap-icons.13977b4a.woff
+server/public/assets/bootstrap-icons.c69bf1cc.woff2
+server/public/assets/index.8a0c09f8.js
+server/public/assets/index.40054f2c.js
+server/public/assets/index.b262c0a2.js
+server/public/assets/index.cd8d4358.css
