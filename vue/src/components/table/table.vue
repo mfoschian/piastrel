@@ -98,10 +98,26 @@ table {
 				cursor: pointer;
 
 				&.sorted.asc::after {
-					content: ' ^'
+					// content: ' ^';
+					content: ' \f57b';
+					font-family: bootstrap-icons !important;
+					font-style: normal;
+					font-weight: normal !important;
+					font-variant: normal;
+					text-transform: none;
+					// line-height: 1;
+					vertical-align: -.125em;
 				}
 				&.sorted.desc::after {
-					content: ' v'
+					// content: ' v';
+					content: ' \f575';
+					font-family: bootstrap-icons !important;
+					font-style: normal;
+					font-weight: normal !important;
+					font-variant: normal;
+					text-transform: none;
+					// line-height: 1;
+					vertical-align: -.125em;
 				}
 			}
 		}
