@@ -10,7 +10,7 @@ const rgx = /([0-9]+).*/;
 export function startNumber(s) {
 	let n = Number(s);
 	if( !isNaN(n) ) return n;
-	let m = s.match(rgx);
+	let m = s?.match(rgx);
 	if(!m) return NaN;
 	return Number(m[1]);
 };

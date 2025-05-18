@@ -36,20 +36,20 @@ router.get('/:id', async function (req, res) {
 });
 
 router.get('/:id/report/:name', async function (req, res) {
-	let event_id = req.params.id;
-	let items = await Convocation.of_event_detailed( event_id ) || [];
-
-	const BaseCsv = require('../reports/BaseCsv.js');
-
-	// TODO: choose a report class dynamically
-	const report_name = req.params.name;
-	if( report_name != 'status' ) {
-		res.status(404);
-		res.json({ message: "Not Found" });
-		return;
-	}
-
 	try {
+		let event_id = req.params.id;
+		let items = await Convocation.of_event_detailed( event_id ) || [];
+	
+		const BaseCsv = require('../reports/BaseCsv.js');
+	
+		// TODO: choose a report class dynamically
+		const report_name = req.params.name;
+		if( report_name != 'status' ) {
+			res.status(404);
+			res.json({ message: "Not Found" });
+			return;
+		}
+	
 		let filename = 'Report_of_event_' + event_id + '.csv';
 		let columns = Object.keys((items[0] || {}));
 		let report = new BaseCsv(filename, columns);
