@@ -16,7 +16,7 @@ class ConvocationConfirmPdf extends BasePdf {
 	constructor(filename, options) {
 		super(filename, {
 			size: PAGE_SIZE,
-			margins: { top: cmY(1.25), right: cm(1.8), bottom: 0, left: cm(1.8) } // bottom 2.3
+			margins: { top: cmY(1.25), right: cm(1.8), bottom: 0, left: cm(1.5) } // bottom 2.3
 		});
 		this.addFont( 'LiberationSerif-Bold', this.assets.font('LiberationSerif-Bold.ttf') );
 		this.addFont( 'LiberationSerif-BoldItalic', this.assets.font('LiberationSerif-BoldItalic.ttf') );
@@ -38,8 +38,8 @@ class ConvocationConfirmPdf extends BasePdf {
 		const _width = doc.page.width - _margins.left - _margins.right;
 
 
-		const footer_text = "Area Amministrativa, Demografici e Ufficio gare\n"
-			+ "Oddelek za administrativne in demografske zadeve ter urad za javna naročila";
+		const footer_text = "Area Amministrativa, Demografici e Transizione digitale\n"
+			+ "Oddelek za administrativne in demografske zadeve ter urad za digitalni prehod";
 		const footer_text_2 = "Responsabile di P.O. – Odgovorni za O.P.: "+PO+"\n"
 			+ "Aurisina Cave-Nabrežina kamnolomi, 25  - 34011 Duino Aurisina–Devin Nabrežina (TS)  \n"
 			+ "Tel.: 040–2017400-430  Web: www.comune.duino-aurisina.ts.it e-mail: elettorale@comune.duino-aurisina.ts.it"
@@ -158,12 +158,12 @@ class ConvocationConfirmPdf extends BasePdf {
 		//
 		const obj_text = event_obj_it + ' - Notifica nomina a scrutatore presso la sezione elettorale';
 		const obj_text_slo = event_obj_slo + ' - Sporočilo o imenovanju za skrutinatorja na volišču';
-		doc.font('LiberationSerif-Bold', 11);
+		doc.font('LiberationSerif-Bold', 10);
 		const obj_start_y = _margins.top + cmY(5.2);
 		const obj_start_x = _margins.left + cm(3.1);
 		doc.text( 'OGGETTO:', _margins.left, obj_start_y, { align: 'left', underline: true });
 		doc.text( 'ZADEVA:', _margins.left, doc.y, { align: 'left', underline: true });
-		doc.font('LiberationSerif', 11);
+		doc.font('LiberationSerif', 10);
 		doc.text( obj_text, obj_start_x, obj_start_y, { align: 'left' });
 		doc.text( obj_text_slo, obj_start_x, doc.y, { align: 'left' });
 
