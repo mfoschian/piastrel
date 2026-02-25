@@ -15,13 +15,11 @@
 	</div>
 </template>
 
-<script>
-export default {
-	props: {
-		opened: { type: Boolean, default: true },
-		items: { type: Array, default: () => [] }
-	}
-}
+<script setup>
+const props = defineProps({
+	opened: { type: Boolean, default: true },
+	items: { type: Array, default: () => [] }
+});
 </script>
 
 

@@ -7,7 +7,7 @@
 			<div class="title" :title="b.address">
 				<div class="bnumber">N. {{ b.number }}</div>
 				<div class="bname">
-					{{  b.name }}
+					{{ b.name }}
 					<template v-if="b.name_slo">
 						<br><span class="sloname">{{  b.name_slo }}</span>
 					</template>
@@ -27,7 +27,7 @@
 	</div>
 </template>
 
-<script>
+<script setup>
 import { Bucket } from '../models/Bucket'
 import { Convocation } from '../models/Convocation'
 
@@ -37,49 +37,39 @@ import { startNumber } from '../libs/utils'
 
 import { computed } from 'vue'
 
-export default {
-	components: { ConvocatedPersonBox },
-	emits: ['details'],
-	props: {
-		read_only: { type: Boolean, default: false }
-	},
-	async setup(props) {
-		let buckets = Bucket.all(); // reactive
 
-		const sorted_buckets = computed( () => {
-			let b = buckets.value.concat([]);
-			const sort_cmp = (a,b) => a > b ? 1 : a < b ? -1 : 0;
+const emits = defineEmits(['details']);
+const props = defineProps({
+	read_only: { type: Boolean, default: false }
+});
 
-			let res = b.sort( (b1,b2) => {
-				let n1 = startNumber(b1.number);
-				let n2 = startNumber(b2.number);
-				if( !isNaN(n1) && !isNaN(n2) )
-					return sort_cmp(n1,n2);
-				else
-					return sort_cmp(b1.number, b2.number);
-			});
-			return res;
-		});
+let buckets = Bucket.all(); // reactive
 
-		await Bucket.load();
-		const assigned_to = (bid) => {
-			return Convocation.inBucket(bid);
-		};
+const sorted_buckets = computed( () => {
+	let b = buckets.value.concat([]);
+	const sort_cmp = (a,b) => a > b ? 1 : a < b ? -1 : 0;
 
-		const print_bucket_confirmations = (bid) => {
-			let url = Convocation.bucketConfirmPdfUrl(bid);
-			window.open(url,'_blank');
-		};
+	let res = b.sort( (b1,b2) => {
+		let n1 = startNumber(b1.number);
+		let n2 = startNumber(b2.number);
+		if( !isNaN(n1) && !isNaN(n2) )
+			return sort_cmp(n1,n2);
+		else
+			return sort_cmp(b1.number, b2.number);
+	});
+	return res;
+});
 
-		return {
-			buckets,
-			sorted_buckets,
-			dropcheck,
-			dropped,
-			assigned_to, print_bucket_confirmations
-		}
-	}
-}
+await Bucket.load();
+const assigned_to = (bid) => {
+	return Convocation.inBucket(bid);
+};
+
+const print_bucket_confirmations = (bid) => {
+	let url = Convocation.bucketConfirmPdfUrl(bid);
+	window.open(url,'_blank');
+};
+
 </script>
 
 <style lang="scss" scoped>

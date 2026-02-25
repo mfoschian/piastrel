@@ -17,25 +17,24 @@
 
 </template>
 
-<script>
-
+<script setup>
+import { inject } from 'vue';
 import TopBar from '../components/TopBar.vue'
-import { NetworkStatus } from '../libs/json-fetch';
+import { NetworkStatus as network} from '../libs/json-fetch';
 
-export default {
-	components: { TopBar },
-	props: {
-		title: { type: String, default: null },
-		subtitle: { type: String, default: null }
-	},
-	inheritAttrs: false,
-	inject: [ 'openMenu' ],
-	async setup() {
-		return {
-			network: NetworkStatus
-		};
-	}
-}
+// defineOptions({
+// 	inheritAttrs: false
+// });
+
+const props = defineProps({
+	title: { type: String, default: null },
+	subtitle: { type: String, default: null }
+});
+
+
+const openMenu = inject('openMenu');
+
+
 </script>
 
 <style lang="scss">

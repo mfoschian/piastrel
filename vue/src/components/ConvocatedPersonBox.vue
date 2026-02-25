@@ -15,70 +15,65 @@
 	</div>	
 </template>
 
-<script>
+<script setup>
 import { ref, computed } from 'vue'
 import { Convocation } from '../models/Convocation';
 
-export default {
-	props: {
-		item: { type: Object, required: true },
-		draggable: { type: Boolean, default: true },
-		read_only: { type: Boolean, default: true }
-	},
-	emits: [ 'details' ],
-	setup(props, context) {
-		let dragging = ref(false);
+const props = defineProps({
+	item: { type: Object, required: true },
+	draggable: { type: Boolean, default: true },
+	read_only: { type: Boolean, default: true }
+});
 
-		const dragme = (ev) => {
-			let dt = ev.dataTransfer;
-			dt.dropEffect = 'move';
-			dt.setData("person_id", props.item.person_id );
-			dt.setData("type", "person");
-			dragging.value = true;
-			// setTimeout( () => { dragging.value = false }, 100 );
-		};
+const emit = defineEmits([ 'details' ]);
 
-		const dragstop = () => {
-			dragging.value = false;
-		};
+let dragging = ref(false);
 
-		let is_draggable = computed( () => {
-			return props.draggable && !props.read_only;
-		});
+const dragme = (ev) => {
+	let dt = ev.dataTransfer;
+	dt.dropEffect = 'move';
+	dt.setData("person_id", props.item.person_id );
+	dt.setData("type", "person");
+	dragging.value = true;
+	// setTimeout( () => { dragging.value = false }, 100 );
+};
 
-		const openInfoBox = () => {
-			context.emit('details', props.item.person_id );
-		};
+const dragstop = () => {
+	dragging.value = false;
+};
 
-		const status_class = computed( () => {
-			return "st-" + (props.item.status || Convocation.status.unknown);
-		});
-		const status_icon = computed( () => {
-			switch( props.item.status ) {
-				case Convocation.status.accepted: return 'bi-check';
-				// case Convocation.status.accepted: return 'bi-person-check-fill';
-				case Convocation.status.rejected: return 'bi-dash-circle';
-				// bi-check2-all
-				// bi-check2
-				// bi-check2-square
-				// bi-clipboard2-check
-				// case Convocation.status.confirmed: return 'bi-person-lock';
-				case Convocation.status.confirmed: return 'bi-check-all';
-				case Convocation.status.unknown:
-				default:
-					return 'bi-person';
-			}
-			return "st-" + (props.item.status || Convocation.status.unknown);
-		});
+let is_draggable = computed( () => {
+	return props.draggable && !props.read_only;
+});
 
-		return {
-			dragme, dragstop,
-			dragging, is_draggable,
-			openInfoBox, status_class, status_icon
-		}
+const openInfoBox = () => {
+	emit('details', props.item.person_id );
+};
+
+const status_class = computed( () => {
+	return "st-" + (props.item.status || Convocation.status.unknown);
+});
+const status_icon = computed( () => {
+	switch( props.item.status ) {
+		case Convocation.status.accepted: return 'bi-check';
+		// case Convocation.status.accepted: return 'bi-person-check-fill';
+		case Convocation.status.rejected: return 'bi-dash-circle';
+		// bi-check2-all
+		// bi-check2
+		// bi-check2-square
+		// bi-clipboard2-check
+		// case Convocation.status.confirmed: return 'bi-person-lock';
+		case Convocation.status.confirmed: return 'bi-check-all';
+		case Convocation.status.unknown:
+		default:
+			return 'bi-person';
 	}
-}
+	// return "st-" + (props.item.status || Convocation.status.unknown);
+});
 
+</script>
+
+<script>
 export const dropcheck = (ev) => {
 	ev.preventDefault();
 };

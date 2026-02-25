@@ -58,7 +58,7 @@
 	</BasePage>
 </template>
 
-<script>
+<script setup>
 import { computed, ref, watchEffect } from 'vue'
 
 import BasePage from './BasePage.vue'
@@ -72,83 +72,62 @@ import { Event } from '../models/Event'
 import { Convocation } from '../models/Convocation'
 
 
-export default {
-	components: { BasePage, ConvocationsBox, BucketsBox, RejectedBox, ConvocatedPersonDetails, PersonSearch },
-	props: {
-		event_id: { type: [String,Number], default: null }
-	},
-	async setup(props) {
+const props = defineProps({
+	event_id: { type: [String,Number], default: null }
+});
 
-		let _event = Event.get_active(); // reactive
-		let has_event = computed( () => _event.value == null ? false : true );
-		let subtitle = computed( () => _event.value == null ? null : 
-			_event.value.active ? _event.value.title : _event.value.title + ' (chiuso)'
-		);
+let event = Event.get_active(); // reactive
+let has_event = computed( () => event.value == null ? false : true );
+let subtitle = computed( () => event.value == null ? null : 
+	event.value.active ? event.value.title : event.value.title + ' (chiuso)'
+);
 
-		let detailsVisible = ref(false);
-		let searchVisible = ref(false);
-		let convocation = ref({});
+let detailsVisible = ref(false);
+let searchVisible = ref(false);
+let convocation = ref({});
 
-		const openDetails = (pid) => {
-			let c = Convocation.ofPerson(pid);
-			convocation.value = c;
-			detailsVisible.value = true;
-		};
+const openDetails = (pid) => {
+	let c = Convocation.ofPerson(pid);
+	convocation.value = c;
+	detailsVisible.value = true;
+};
 
-		const saveConvocation = async (x) => {
-			let c = convocation.value;
-			let upd = {
-				id: c.id,
-				status: x.status,
-				doc_dt: x.doc_dt,
-				doc_number: x.doc_number,
-				note: x.note
-			}
-			let res = await Convocation.save(upd);
-			detailsVisible.value = false;
-		};
-
-		let read_only = computed( () => {
-			return !has_event || _event.value == null || !_event.value.active;
-		});
-
-		watchEffect( async () => {
-			Convocation.clear();
-			await Event.load(props.event_id);
-		});
-
-		const addPerson = async (p) => {
-			console.log('choosed person %s', p.code);
-			let c = Convocation.new();
-			c.person_id = p.id;
-			c.event_id = _event.value.id;
-			let res = await Convocation.save(c);
-			searchVisible.value = false;
-		};
-
-		const getEventReport = () => {
-			const url = Event.reportUrl( _event.value.id, 'status' );
-			window.open(url,'_blank');
-		};
-
-		return {
-			has_event, 
-			event: _event,
-			subtitle,
-
-			detailsVisible,
-			convocation,
-			openDetails,
-			saveConvocation,
-			getEventReport,
-
-			searchVisible,
-			addPerson,
-
-			read_only
-		};
+const saveConvocation = async (x) => {
+	let c = convocation.value;
+	let upd = {
+		id: c.id,
+		status: x.status,
+		doc_dt: x.doc_dt,
+		doc_number: x.doc_number,
+		note: x.note
 	}
-}
+	let res = await Convocation.save(upd);
+	detailsVisible.value = false;
+};
+
+let read_only = computed( () => {
+	return !has_event || event.value == null || !event.value.active;
+});
+
+watchEffect( async () => {
+	Convocation.clear();
+	await Event.load(props.event_id);
+});
+
+const addPerson = async (p) => {
+	console.log('choosed person %s', p.code);
+	let c = Convocation.new();
+	c.person_id = p.id;
+	c.event_id = event.value.id;
+	let res = await Convocation.save(c);
+	searchVisible.value = false;
+};
+
+const getEventReport = () => {
+	const url = Event.reportUrl( event.value.id, 'status' );
+	window.open(url,'_blank');
+};
+
 </script>
 
 <style>

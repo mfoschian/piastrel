@@ -54,7 +54,7 @@
 	</BasePage>
 </template>
 
-<script>
+<script setup>
 import { ref, computed } from 'vue'
 
 import BasePage from './BasePage.vue'
@@ -62,98 +62,82 @@ import EventEditor from '../components/events/EventEditor.vue'
 import { Event } from '../models/Event'
 import { deepClone } from '../libs/utils'
 
-export default {
-	components: { BasePage, EventEditor },
-	async setup(props,context) {
 
-		const max_items = 20;
+const max_items = 20;
 
-		let _items = await Event.get( max_items ); // reactive !
+let items = await Event.get( max_items ); // reactive !
 
-		let _edited_item = ref(Event.new());
-		let editor_title = computed( () => _edited_item.value.id == null ? "Nuovo Evento" : "Modifica Evento" );
+let edited_item = ref(Event.new());
+let editor_title = computed( () => edited_item.value.id == null ? "Nuovo Evento" : "Modifica Evento" );
 
-		let dlgVisible = ref(false);
-		let page_error = ref(null);
+let dlgVisible = ref(false);
+let page_error = ref(null);
 
-		const newEvent = () => {
-			_edited_item.value = Event.new();
-			dlgVisible.value = true;
-		};
+const newEvent = () => {
+	edited_item.value = Event.new();
+	dlgVisible.value = true;
+};
 
-		const cancel = () => {
-			dlgVisible.value = false;
-		};
+const cancel = () => {
+	dlgVisible.value = false;
+};
 
-		const edit = (e) => {
-			let ev = {
-				id: e.id,
-				title: e.title,
-				title_slo: e.title_slo,
-				date: e.date,
-				active: e.active,
-				info: deepClone(e.info)
-			};
-			// debugger
-			_edited_item.value = ev;
-			dlgVisible.value = true;
-		};
+const edit = (e) => {
+	let ev = {
+		id: e.id,
+		title: e.title,
+		title_slo: e.title_slo,
+		date: e.date,
+		active: e.active,
+		info: deepClone(e.info)
+	};
+	// debugger
+	edited_item.value = ev;
+	dlgVisible.value = true;
+};
 
-		const clone = (e) => {
-			let ev = {
-				id: null,
-				title: e.title,
-				title_slo: e.title_slo,
-				date: e.date,
-				active: true,
-				info: deepClone(e.info)
-			};
-			// debugger
-			_edited_item.value = ev;
-			dlgVisible.value = true;
-		};
+const clone = (e) => {
+	let ev = {
+		id: null,
+		title: e.title,
+		title_slo: e.title_slo,
+		date: e.date,
+		active: true,
+		info: deepClone(e.info)
+	};
+	// debugger
+	edited_item.value = ev;
+	dlgVisible.value = true;
+};
 
-		const save = async (e) => {
-			try {
-				await Event.save(e);
-				dlgVisible.value = false;
-			}
-			catch( err ) {
-				console.error( err );
-				page_error.value = err.toString();
-				dlgVisible.value = false;
-			}
-		};
-
-		const remove = async (e) => {
-			let confirmed = confirm( `Stai per cancellare l'evento "${e.title}".\nConfermi ?` );
-			if( confirmed != true )
-				return;
-
-			try {
-				await Event.remove(e.id);
-				dlgVisible.value = false;
-			}
-			catch( err ) {
-				console.error( err );
-				page_error.value = err.toString();
-				dlgVisible.value = false;
-			}
-		};
-
-
-		return {
-			items: _items,
-			newEvent,
-			cancel,
-			edit, clone, save, remove,
-			page_error,
-			dlgVisible,
-			edited_item: _edited_item,
-			editor_title
-		}
+const save = async (e) => {
+	try {
+		await Event.save(e);
+		dlgVisible.value = false;
 	}
-}
+	catch( err ) {
+		console.error( err );
+		page_error.value = err.toString();
+		dlgVisible.value = false;
+	}
+};
+
+const remove = async (e) => {
+	let confirmed = confirm( `Stai per cancellare l'evento "${e.title}".\nConfermi ?` );
+	if( confirmed != true )
+		return;
+
+	try {
+		await Event.remove(e.id);
+		dlgVisible.value = false;
+	}
+	catch( err ) {
+		console.error( err );
+		page_error.value = err.toString();
+		dlgVisible.value = false;
+	}
+};
+
 
 </script>
 

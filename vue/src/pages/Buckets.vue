@@ -53,7 +53,7 @@
 	</BasePage>
 </template>
 
-<script>
+<script setup>
 import { ref, computed } from 'vue'
 
 import BasePage from './BasePage.vue'
@@ -62,100 +62,84 @@ import { Bucket } from '../models/Bucket'
 import { isEmpty, startNumber } from '../libs/utils'
 
 
-export default {
-	components: { BasePage, BucketEditor },
-	async setup(props,context) {
 
-		let _items = await Bucket.all(); // reactive !
+let items = await Bucket.all(); // reactive !
 
-		let _edited_item = ref(Bucket.new());
-		let editor_title = computed( () => _edited_item.value.id == null ? "Nuova Sezione" : "Modifica Sezione" );
+let edited_item = ref(Bucket.new());
+let editor_title = computed( () => edited_item.value.id == null ? "Nuova Sezione" : "Modifica Sezione" );
 
-		let dlgVisible = ref(false);
-		let page_error = ref(null);
+let dlgVisible = ref(false);
+let page_error = ref(null);
 
-		const newBucket = () => {
-			_edited_item.value = Bucket.new();
-			dlgVisible.value = true;
-		};
+const newBucket = () => {
+	edited_item.value = Bucket.new();
+	dlgVisible.value = true;
+};
 
-		const cancel = () => {
-			dlgVisible.value = false;
-		};
+const cancel = () => {
+	dlgVisible.value = false;
+};
 
-		const edit = (e) => {
-			let ev = {
-				id: e.id,
-				number: e.number,
-				name: e.name,
-				address: e.address,
-				name_slo: e.name_slo,
-				address_slo: e.address_slo
-			};
-			// debugger
-			_edited_item.value = ev;
-			dlgVisible.value = true;
-		};
+const edit = (e) => {
+	let ev = {
+		id: e.id,
+		number: e.number,
+		name: e.name,
+		address: e.address,
+		name_slo: e.name_slo,
+		address_slo: e.address_slo
+	};
+	// debugger
+	edited_item.value = ev;
+	dlgVisible.value = true;
+};
 
-		const clone = (e) => {
-			let n = startNumber(e.number);
-			let ev = {
-				id: null,
-				number: isNaN(n) ? e.number : n+1,
-				// number: e.number,
-				name: e.name,
-				address: e.address,
-				name_slo: e.name_slo,
-				address_slo: e.address_slo
-			};
-			// debugger
-			_edited_item.value = ev;
-			dlgVisible.value = true;
-		};
+const clone = (e) => {
+	let n = startNumber(e.number);
+	let ev = {
+		id: null,
+		number: isNaN(n) ? e.number : n+1,
+		// number: e.number,
+		name: e.name,
+		address: e.address,
+		name_slo: e.name_slo,
+		address_slo: e.address_slo
+	};
+	// debugger
+	edited_item.value = ev;
+	dlgVisible.value = true;
+};
 
-		const save = async (e) => {
-			try {
-				await Bucket.save(e);
-				dlgVisible.value = false;
-			}
-			catch( err ) {
-				console.error( err );
-				page_error.value = err.toString();
-				dlgVisible.value = false;
-			}
-		};
-
-		const remove = async (e) => {
-			let confirmed = confirm( `Stai per cancellare l'evento "${e.title}".\nConfermi ?` );
-			if( confirmed != true )
-				return;
-
-			try {
-				await Bucket.remove(e.id);
-				dlgVisible.value = false;
-			}
-			catch( err ) {
-				console.error( err );
-				page_error.value = err.toString();
-				dlgVisible.value = false;
-			}
-		};
-
-		await Bucket.load();
-
-		return {
-			items: _items,
-			newBucket,
-			cancel,
-			edit, save, remove, clone,
-			isEmpty,
-			page_error,
-			dlgVisible,
-			edited_item: _edited_item,
-			editor_title
-		}
+const save = async (e) => {
+	try {
+		await Bucket.save(e);
+		dlgVisible.value = false;
 	}
-}
+	catch( err ) {
+		console.error( err );
+		page_error.value = err.toString();
+		dlgVisible.value = false;
+	}
+};
+
+const remove = async (e) => {
+	let confirmed = confirm( `Stai per cancellare l'evento "${e.title}".\nConfermi ?` );
+	if( confirmed != true )
+		return;
+
+	try {
+		await Bucket.remove(e.id);
+		dlgVisible.value = false;
+	}
+	catch( err ) {
+		console.error( err );
+		page_error.value = err.toString();
+		dlgVisible.value = false;
+	}
+};
+
+await Bucket.load();
+
 
 </script>
 

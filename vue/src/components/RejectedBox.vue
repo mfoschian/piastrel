@@ -16,7 +16,7 @@
 </div>
 </template>
 
-<script>
+<script setup>
 import { watchEffect, computed } from 'vue'
 
 import ConvocatedPersonBox from '../components/ConvocatedPersonBox.vue'
@@ -24,24 +24,17 @@ import { dropcheck, dropped } from './ConvocatedPersonBox.vue'
 
 import { Convocation, Stats } from '../models/Convocation'
 
-export default {
-	components: { ConvocatedPersonBox },
-	props: {
-		read_only: { type: Boolean, default: false }
-	},
-	setup(props, context) {
-		let _convocations = Convocation.all(); // reactive
+const props = defineProps({
+	read_only: { type: Boolean, default: false }
+});
 
-		const drop_and_reject = (ev) => {
-			return dropped(ev,null,Convocation.status.rejected);
-		};
+let _convocations = Convocation.all(); // reactive
 
-		return {
-			rejected: Stats.rejected,
-			dropcheck, drop_and_reject
-		}
-	}
-}
+const drop_and_reject = (ev) => {
+	return dropped(ev,null,Convocation.status.rejected);
+};
+
+let rejected = Stats.rejected;
 </script>
 
 <style scoped lang="scss">

@@ -26,7 +26,7 @@
 </div>
 </template>
 
-<script>
+<script setup>
 import { watchEffect, computed, ref } from 'vue'
 
 import ConvocatedPersonBox from '../components/ConvocatedPersonBox.vue'
@@ -36,62 +36,51 @@ import { Convocation } from '../models/Convocation'
 
 import { isEmpty } from '../libs/utils'
 
-export default {
-	components: { ConvocatedPersonBox },
-	emits: ['openSearchBox','details'],
-	props: {
-		event_id: { type: [String,Number], default: null },
-		read_only: { type: Boolean, default: false }
-	},
-	setup(props, context) {
-		let _convocations = Convocation.all(); // reactive
-		let filter = ref(null);
+const emit = defineEmits(['openSearchBox','details']);
 
-		const _unassigned = computed( () => {
-			let cc = _convocations.value || [];
-			// return cc.filter( c => c.bucket_id == null && c.status != Convocation.status.rejected );
-			let ps = cc.filter( c => c.bucket_id == null );
-			if( !isEmpty(filter.value) && filter.value.length >= 2 ) {
-				let flt = filter.value.toLowerCase();
-				ps = ps.filter( c => c.last_name.toLowerCase().indexOf(flt) >= 0 
-						|| c.first_name.toLowerCase().indexOf(flt) >= 0 );
-			}
-			return ps.sort( (a,b) => {
-				return a.last_name > b.last_name ? 1 :
-					a.last_name < b.last_name ? -1 :
-					a.first_name > b.first_name ? 1 :
-					a.first_name < b.first_name ? -1 : 0;
-			});
-		});
+const props = defineProps({
+	event_id: { type: [String,Number], default: null },
+	read_only: { type: Boolean, default: false }
+});
 
+let convocations = Convocation.all(); // reactive
+let filter = ref(null);
 
-		const add_person = async () => {
-			console.log( 'Adding person' );
-			context.emit('openSearchBox');
-		}
-
-
-		watchEffect( async () => {
-			// console.log( 'watch effect');
-			if( props.event_id != null ) {
-				console.log( 'Loading convocations for event %s...', props.event_id );
-				await Convocation.load( props.event_id );
-			}
-			else {
-				Convocation.clear();
-			}
-		});
-
-
-		return {
-			convocations: _convocations,
-			unassigned: _unassigned,
-			filter,
-			add_person,
-			dropcheck, dropped
-		}
+const unassigned = computed( () => {
+	let cc = convocations.value || [];
+	// return cc.filter( c => c.bucket_id == null && c.status != Convocation.status.rejected );
+	let ps = cc.filter( c => c.bucket_id == null );
+	if( !isEmpty(filter.value) && filter.value.length >= 2 ) {
+		let flt = filter.value.toLowerCase();
+		ps = ps.filter( c => c.last_name.toLowerCase().indexOf(flt) >= 0 
+				|| c.first_name.toLowerCase().indexOf(flt) >= 0 );
 	}
+	return ps.sort( (a,b) => {
+		return a.last_name > b.last_name ? 1 :
+			a.last_name < b.last_name ? -1 :
+			a.first_name > b.first_name ? 1 :
+			a.first_name < b.first_name ? -1 : 0;
+	});
+});
+
+
+const add_person = async () => {
+	console.log( 'Adding person' );
+	emit('openSearchBox');
 }
+
+
+watchEffect( async () => {
+	// console.log( 'watch effect');
+	if( props.event_id != null ) {
+		console.log( 'Loading convocations for event %s...', props.event_id );
+		await Convocation.load( props.event_id );
+	}
+	else {
+		Convocation.clear();
+	}
+});
+
 </script>
 
 <style scoped lang="scss">

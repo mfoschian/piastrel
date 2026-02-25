@@ -2,7 +2,6 @@
 	<div class="box">
 		<div class="title">
 			<slot><h3 v-if="title">{{ title }}</h3></slot>
-			<!-- <h3>Piastrel</h3> -->
 			<h3><i class="bi-list clickable" @click="$emit('openSettings')"></i></h3>
 		</div>
 
@@ -11,19 +10,14 @@
 	</div>
 </template>
 
-<script>
+<script setup>
 
-export default {
-	props: {
-		title: { type: String, default: 'myApp' },
-		subtitle: { type: String, default: null }
-	},
-	emits: [ 'openSettings' ],
-	computed: {
-	},
-	methods: {
-	}
-}
+const props = defineProps({
+	title: { type: String, default: 'myApp' },
+	subtitle: { type: String, default: null }
+});
+
+const emit = defineEmits([ 'openSettings' ]);
 
 </script>
 
