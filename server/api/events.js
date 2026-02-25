@@ -36,20 +36,20 @@ router.get('/:id', async function (req, res) {
 });
 
 router.get('/:id/report/:name', async function (req, res) {
+	let event_id = req.params.id;
+	let items = await Convocation.of_event_detailed( event_id ) || [];
+
+	const BaseCsv = require('../reports/BaseCsv.js');
+
+	// TODO: choose a report class dynamically
+	const report_name = req.params.name;
+	if( report_name != 'status' ) {
+		res.status(404);
+		res.json({ message: "Not Found" });
+		return;
+	}
+
 	try {
-		let event_id = req.params.id;
-		let items = await Convocation.of_event_detailed( event_id ) || [];
-	
-		const BaseCsv = require('../reports/BaseCsv.js');
-	
-		// TODO: choose a report class dynamically
-		const report_name = req.params.name;
-		if( report_name != 'status' ) {
-			res.status(404);
-			res.json({ message: "Not Found" });
-			return;
-		}
-	
 		let filename = 'Report_of_event_' + event_id + '.csv';
 		let columns = Object.keys((items[0] || {}));
 		let report = new BaseCsv(filename, columns);
@@ -81,9 +81,8 @@ router.get('/:id/buckets/:bid/confirmations.pdf', async function (req, res) {
 		res.json({ message: "Not Found" });
 		return;
 	}
-
+	
 	let convs = await Convocation.pid_of_event_bucket( event.id, bucket.id );
-
 	let status = req.query.status || 'confirmed';
 	if(status == 'all')
 		status = null;
@@ -97,8 +96,8 @@ router.get('/:id/buckets/:bid/confirmations.pdf', async function (req, res) {
 		let c = convs[i];
 
 		let conv = await Convocation.get( c.id );
-		if(status != null && status.indexOf(conv.status) < 0 )
-			continue;
+		//if(status != null && status.indexOf(conv.status) < 0 )
+			//continue;
 
 		let person = await Person.get( c.person_id );
 

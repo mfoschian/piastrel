@@ -4,7 +4,7 @@
 	@drop="dropped($event, null)"
 >
 	<div class="title">
-		Convocati: {{ convocations.length || 'ancora nessuno'}}
+		Iscritti ALBO: {{ convocations.length || 'ancora nessuno'}}
 		<div class="inline-bar">
 			<button v-if="!read_only"
 				class="btn btn-info btn-sm btn-info"

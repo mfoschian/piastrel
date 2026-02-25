@@ -16,7 +16,7 @@ class ConvocationConfirmPdf extends BasePdf {
 	constructor(filename, options) {
 		super(filename, {
 			size: PAGE_SIZE,
-			margins: { top: cmY(1.25), right: cm(1.8), bottom: 0, left: cm(1.5) } // bottom 2.3
+			margins: { top: cmY(1.25), right: cm(1.8), bottom: 0, left: cm(1.8) } // bottom 2.3
 		});
 		this.addFont( 'LiberationSerif-Bold', this.assets.font('LiberationSerif-Bold.ttf') );
 		this.addFont( 'LiberationSerif-BoldItalic', this.assets.font('LiberationSerif-BoldItalic.ttf') );
@@ -130,7 +130,7 @@ class ConvocationConfirmPdf extends BasePdf {
 		// - N.Protocollo, numero documento, data e luogo
 		doc.font('LiberationSerif', 11);
 		const h_text_left = 'Prot. n. ' + protocol_number
-			+ '\nVerbale n./Zapisnik št. '+(document_number)+' dd./z dne ' + formatDate('DD/MM/YYYY', document_dt)
+			+ '\nVerbale n./Zapisnik št. '+(document_number)+' - ' + formatDate('DD/MM/YYYY', document_dt)
 		;
 		const h_text_right = 'Aurisina/Nabrežina, ' + formatDate('DD.MM.YYYY', today);
 
@@ -160,7 +160,7 @@ class ConvocationConfirmPdf extends BasePdf {
 		const obj_text_slo = event_obj_slo + ' - Sporočilo o imenovanju za skrutinatorja na volišču';
 		doc.font('LiberationSerif-Bold', 10);
 		const obj_start_y = _margins.top + cmY(5.2);
-		const obj_start_x = _margins.left + cm(3.1);
+		const obj_start_x = _margins.left + cm(2.2);
 		doc.text( 'OGGETTO:', _margins.left, obj_start_y, { align: 'left', underline: true });
 		doc.text( 'ZADEVA:', _margins.left, doc.y, { align: 'left', underline: true });
 		doc.font('LiberationSerif', 10);

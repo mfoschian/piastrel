@@ -25,10 +25,10 @@ const { file } = require('pdfkit');
 app.use( '/api', api );
 
 async function start_server() {
-	console.log( 'Connecting to database...' );
+	console.log( 'Me taco al database per Piastrel...' );
 	await db.init(options.database);
-	console.log( 'Starting server...');
-	app.listen(port, () => console.log(`\tstarted. Visit http://localhost:${port}`));
+	console.log( 'Fazo partir el server...');
+	app.listen(port, () => console.log(`\tPiastrel xe pronto. Te pol andar sul sito http://localhost:${port}`));
 }
 
 start_server();

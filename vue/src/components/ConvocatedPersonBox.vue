@@ -9,7 +9,7 @@
 		<span class="buttons">
 			<button class="btn btn-sm" @click="openInfoBox">
 				<!-- <span class="bi bi-md bi-caret-right-square" ></span> -->
-				<span class="bi bi-md bi-box-arrow-up-right" ></span>
+				<span class="bi bi-md bi-box-arrow-up-right text-info" ></span>
 			</button>
 		</span>
 	</div>	
@@ -98,21 +98,6 @@ export const dropped = async (ev, bid, status) => {
 
 </script>
 
-<style lang="scss" scoped>
-.buttons {
-	button {
-		span {
-			// background-color: yellow;
-			// padding: 0.1rem;
-			// border-radius: 15%;
-			// &:hover {
-			// 	color: red;
-			// }
-			color: red;
-		}
-	}
-}
-</style>
 <style lang="scss">
 .person {
 	padding: 0.35rem;
